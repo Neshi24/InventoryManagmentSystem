@@ -45,11 +45,11 @@ namespace InventoryService.Services
                 existingItem.Quantity = itemDto.Quantity;
 
                 await _itemRepo.UpdateItem(existingItem);
-                
+
             }
             catch (Exception e)
             {
-               
+
                 throw new Exception("error: " + e);
             }
         }
@@ -59,5 +59,11 @@ namespace InventoryService.Services
         {
             await _itemRepo.DeleteItem(id);
         }
+        
+        public void RebuildDB()
+        {
+            _itemRepo.RebuildDB();
+        }
     }
+
 }
