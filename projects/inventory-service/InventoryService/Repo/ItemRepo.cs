@@ -45,5 +45,11 @@ namespace InventoryService.Repo
                 await _context.SaveChangesAsync();
             }
         }
+        
+        public void RebuildDB()
+        {
+            _context.Database.EnsureDeleted();
+            _context.Database.EnsureCreated();
+        }
     }
 }
