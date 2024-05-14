@@ -1,5 +1,5 @@
-﻿using InventoryService.Models;
-
+﻿
+using Shared;
 
 namespace InventoryService.Repo
 {

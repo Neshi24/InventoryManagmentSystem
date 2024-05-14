@@ -1,8 +1,8 @@
 using AutoMapper;
-using InventoryService.Models;
 using Microsoft.EntityFrameworkCore;
 using InventoryService.Repo;
 using InventoryService.Services;
+using Shared;
 using DbContext = InventoryService.Repo.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);

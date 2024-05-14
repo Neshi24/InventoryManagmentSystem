@@ -1,6 +1,6 @@
-﻿using InventoryService.Models;
-using InventoryService.Repo;
+﻿using InventoryService.Repo;
 using AutoMapper;
+using Shared;
 
 namespace InventoryService.Services
 {
