@@ -9,6 +9,5 @@ namespace InventoryService.Services
         Task<List<Item>> GetAllItems();
         Task UpdateItem(int id, ItemDto itemDto);
         Task DeleteItem(int id);
-        void RebuildDB();
     }
 }

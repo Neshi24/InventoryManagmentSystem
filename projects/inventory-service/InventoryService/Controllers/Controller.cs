@@ -88,12 +88,5 @@ namespace InventoryService.Controllers
                 return BadRequest($"An error occurred: {e.Message}");
             }
         }
-        [HttpPost]
-            [Route("RebuildDB")]
-            public void RebuildDB()
-            {
-                _itemService.RebuildDB();
-            }
     }
-    
 }
