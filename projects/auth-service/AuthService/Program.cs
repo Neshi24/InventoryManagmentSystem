@@ -4,13 +4,14 @@ using AuthService.Data.Repositories;
 using AuthService.Model;
 using AuthService.Services.Implementations;
 using AuthService.Services.Interfaces;
+using AuthService.Services.Utility;
 using AutoMapper;
 using CommonPackage;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://0.0.0.0:8081");
+builder.WebHost.UseUrls("http://0.0.0.0:8083");
 var serviceName = "MeasurementService";
 var serviceVersion = "1.0.0";
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
@@ -35,6 +36,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<HashingLogic>();
 
 var app = builder.Build();
 

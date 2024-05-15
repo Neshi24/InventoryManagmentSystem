@@ -1,0 +1,54 @@
+version: "3"
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql-server
+    environment:
+      SA_PASSWORD: "YourStrong@Passw0rd"  # Set your own strong password here
+      ACCEPT_EULA: "Y"
+    ports: 
+      - "1433:1433"  # Expose the SQL Server port
+    volumes:
+      - ./data:/var/opt/mssql/data
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+
+  seq:
+    image: datalust/seq
+    ports:
+      - "5341:5341"
+      - "4342:80"
+    volumes:
+      - rps_seq_data1:/data
+    environment:
+      - ACCEPT_EULA=Y
+
+  InventoryService:
+    image: inventoryservice
+    build:
+      context: .
+      dockerfile: projects/inventory-service/InventoryService/Dockerfile
+    ports:
+      - "8081:8081"
+
+  OrderService:
+    image: orderservice
+    build:
+      context: .
+      dockerfile: projects/order-service/OrderService/Dockerfile
+    ports:
+      - "8082:8082"
+
+  AuthService:
+    image: authservice
+    build:
+      context: .
+      dockerfile: projects/auth-service/AuthService/Dockerfile
+    ports:
+      - "8083:8083"
+
+volumes:
+  rps_seq_data1:

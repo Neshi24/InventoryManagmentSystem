@@ -2,7 +2,7 @@
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-
+EXPOSE 8082
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["projects/order-service/OrderService/OrderService.csproj", "projects/order-service/OrderService/"]
