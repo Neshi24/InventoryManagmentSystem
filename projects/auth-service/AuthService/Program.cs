@@ -1,4 +1,3 @@
-
 using AuthService.Data;
 using AuthService.Data.Interface;
 using AuthService.Data.Repositories;
@@ -6,12 +5,16 @@ using AuthService.Model;
 using AuthService.Services.Implementations;
 using AuthService.Services.Interfaces;
 using AutoMapper;
+using CommonPackage;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8081");
-
-
+var serviceName = "MeasurementService";
+var serviceVersion = "1.0.0";
+builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
