@@ -8,7 +8,7 @@ using DbContext = InventoryService.Repo.DbContext;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DbContext>(options =>
-    options.UseSqlite("Data Source=localdb.db"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryDb")));
 
 var config = new MapperConfiguration(conf =>
 {

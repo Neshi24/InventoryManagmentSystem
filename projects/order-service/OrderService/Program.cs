@@ -8,7 +8,7 @@ using DbContext = OrderService.Repo.DbContext;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DbContext>(options =>
-    options.UseSqlite("Data Source=localdb.db"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDb")));
 
 var config = new MapperConfiguration(conf =>
 {
