@@ -5,7 +5,8 @@ using AuthService.Services.Utility;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Controllers;
-
+[ApiController]
+[Route("[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;

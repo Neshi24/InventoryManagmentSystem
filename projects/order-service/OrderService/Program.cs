@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using DbContext = OrderService.Repo.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.WebHost.UseUrls("http://0.0.0.0:8082");
 builder.Services.AddDbContext<DbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDb")));
 
