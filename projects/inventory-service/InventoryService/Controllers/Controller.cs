@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using InventoryService.Services;
+using OpenTelemetry.Trace;
 using Shared;
 
 
@@ -10,6 +11,7 @@ namespace InventoryService.Controllers
     public class ItemController : ControllerBase
     {
         private readonly IItemService _itemService;
+        private readonly Tracer _tracer;
 
         public ItemController(IItemService itemService)
         {

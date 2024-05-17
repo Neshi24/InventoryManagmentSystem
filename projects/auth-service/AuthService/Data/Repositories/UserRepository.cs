@@ -1,66 +1,117 @@
 ﻿using AuthService.Data.Interface;
 using AuthService.Model;
+using CommonPackage;
+using OpenTelemetry.Trace;
 
 namespace AuthService.Data.Repositories;
 
 public class UserRepository : IUserRepository
 {
     private readonly AuthDbContext _authDbContext;
-    
-    public UserRepository(AuthDbContext authDbContext)
+    private readonly Tracer _tracer;
+
+    public UserRepository(AuthDbContext authDbContext, Tracer tracer)
     {
         _authDbContext = authDbContext;
+        _tracer = tracer;
     }
 
-    public  User CreateUser(User user)
+    public User CreateUser(User user)
     {
-        if (_authDbContext.UsersTable.Any(u =>u.Email.Equals(user.Email)))
+        using var activity = _tracer.StartActiveSpan("CreateUser datalayer");
+        try
         {
-            throw new Exception("User with this email already exists");
+            if (_authDbContext.UsersTable.Any(u => u.Email.Equals(user.Email)))
+            {
+                throw new Exception("User with this email already exists");
+            }
+            _authDbContext.UsersTable.Add(user);
+            _authDbContext.SaveChangesAsync();
+            return user;
         }
-        _authDbContext.UsersTable.Add(user);
-        _authDbContext.SaveChangesAsync();
-        return user;
+        catch (Exception ex)
+        {
+            Monitoring.Log.Error("Unable to retrieve Create new user.", ex);
+            throw;
+        }
     }
 
     public User? GetUserById(int userId)
-    { 
-        var userToFind = _authDbContext.UsersTable.FirstOrDefault(u => u.Id == (userId));
-        return userToFind;
+    {
+        using var activity = _tracer.StartActiveSpan("GetUserById datalayer");
+        try
+        {
+            var userToFind = _authDbContext.UsersTable.FirstOrDefault(u => u.Id == userId);
+            return userToFind;
+        }
+        catch (Exception ex)
+        {
+            Monitoring.Log.Error("Unable to retrieve Create new user.", ex);
+            throw;
+        }
     }
-    
+
     public User UpdateUser(User user)
     {
-        _authDbContext.UsersTable.Update(user);
-        _authDbContext.SaveChanges();
-        return user;
+        using var activity = _tracer.StartActiveSpan("UpdateUser datalayer");
+        try
+        {
+            _authDbContext.UsersTable.Update(user);
+            _authDbContext.SaveChanges();
+            return user;
+        }
+        catch (Exception ex)
+        {
+            Monitoring.Log.Error("Unable to retrieve Create new user.", ex);
+            throw;
+        }
     }
-    
+
     public User? DeleteUser(int userId)
     {
-        var userToDelete =  _authDbContext.UsersTable.FirstOrDefault(u => u.Id == (userId));
-
-        if (userToDelete !=null)
+        using var activity = _tracer.StartActiveSpan("DeleteUser datalayer");
+        try
         {
-            _authDbContext.UsersTable.Remove(userToDelete);
-            _authDbContext.SaveChangesAsync();
+            var userToDelete = _authDbContext.UsersTable.FirstOrDefault(u => u.Id == userId);
+            if (userToDelete != null)
+            {
+                _authDbContext.UsersTable.Remove(userToDelete);
+                _authDbContext.SaveChangesAsync();
+            }
+            return userToDelete;
         }
-        // returning deleted user for now. may need to change //TODO
-        return userToDelete;
+        catch (Exception ex)
+        {
+            Monitoring.Log.Error("Unable to retrieve Create new user.", ex);
+            throw;
+        }
     }
 
-
-    
     public User GetUserByEmail(string userEmail)
     {
-        
-        return _authDbContext.UsersTable.FirstOrDefault(u => u.Email == userEmail)!;;
+        using var activity = _tracer.StartActiveSpan("GetUserByEmail datalayer");
+        try
+        {
+            return _authDbContext.UsersTable.FirstOrDefault(u => u.Email == userEmail)!;
+        }
+        catch (Exception ex)
+        {
+            Monitoring.Log.Error("Unable to retrieve Create new user.", ex);
+            throw;
+        }
     }
 
-    
     public void RebuildDB()
     {
-        _authDbContext.Database.EnsureDeleted();
-        _authDbContext.Database.EnsureCreated();
+        try
+        {
+            _authDbContext.Database.EnsureDeleted();
+            _authDbContext.Database.EnsureCreated();
+        }
+        catch (Exception ex)
+        {
+            Monitoring.Log.Error("Unable to retrieve Create new user.", ex);
+            throw;
+        }
     }
 }
