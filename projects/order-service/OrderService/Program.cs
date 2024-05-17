@@ -1,12 +1,18 @@
 using AutoMapper;
+using CommonPackage;
 using OrderService.Repo;
 using OrderService.Services;
 using Shared;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Trace;
 using DbContext = OrderService.Repo.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8082");
+var serviceName = "InventoryService";
+var serviceVersion = "1.0.0";
+builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 builder.Services.AddDbContext<DbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDb")));
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommonPackage;
+using Microsoft.EntityFrameworkCore;
 using Shared;
 
 namespace InventoryService.Repo
@@ -14,40 +15,88 @@ namespace InventoryService.Repo
 
         public async Task CreateItem(Item item)
         {
-            _context.ItemTable.Add(item);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.ItemTable.Add(item);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to create item.", ex);
+                throw;
+            }
         }
 
         public async Task<Item> GetItemById(int id)
         {
-            return await _context.ItemTable.FindAsync(id);
+            try
+            {
+                return await _context.ItemTable.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve item.", ex);
+                throw;
+            }
         }
 
         public async Task<List<Item>> GetAllItems()
         {
-            return await _context.ItemTable.ToListAsync();
+            try
+            {
+                return await _context.ItemTable.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve items.", ex);
+                throw;
+            }
         }
 
         public async Task UpdateItem(Item item)
         {
-            _context.Entry(item).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Entry(item).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to update item.", ex);
+                throw;
+            }
         }
 
         public async Task DeleteItem(int id)
         {
-            var item = await _context.ItemTable.FindAsync(id);
-            if (item != null)
+            try
             {
-                _context.ItemTable.Remove(item);
-                await _context.SaveChangesAsync();
+                var item = await _context.ItemTable.FindAsync(id);
+                if (item != null)
+                {
+                    _context.ItemTable.Remove(item);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to delete item.", ex);
+                throw;
             }
         }
-        
+
         public void RebuildDB()
         {
-            _context.Database.EnsureDeleted();
-            _context.Database.EnsureCreated();
+            try
+            {
+                _context.Database.EnsureDeleted();
+                _context.Database.EnsureCreated();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to rebuild database.", ex);
+                throw;
+            }
         }
     }
 }

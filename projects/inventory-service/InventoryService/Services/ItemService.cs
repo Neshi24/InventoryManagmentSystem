@@ -1,5 +1,7 @@
 ﻿using InventoryService.Repo;
 using AutoMapper;
+using CommonPackage;
+using OpenTelemetry.Trace;
 using Shared;
 
 namespace InventoryService.Services
@@ -8,31 +10,61 @@ namespace InventoryService.Services
     {
         private readonly IItemRepo _itemRepo;
         private readonly IMapper _mapper;
+        private readonly Tracer _tracer;
 
-        public ItemService(IItemRepo itemRepo, IMapper mapper)
+        public ItemService(IItemRepo itemRepo, IMapper mapper, Tracer tracer)
         {
             _itemRepo = itemRepo;
             _mapper = mapper;
+            _tracer = tracer;
         }
 
         public async Task CreateItem(ItemDto itemDto)
         {
-            var item = _mapper.Map<Item>(itemDto);
-            await _itemRepo.CreateItem(item);
+            using var activity = _tracer.StartActiveSpan("CreateItem service");
+            try
+            {
+                var item = _mapper.Map<Item>(itemDto);
+                await _itemRepo.CreateItem(item);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to create item.", ex);
+                throw;
+            }
         }
 
         public async Task<Item> GetItemById(int id)
         {
-            return await _itemRepo.GetItemById(id);
+            using var activity = _tracer.StartActiveSpan("GetItemById service");
+            try
+            {
+                return await _itemRepo.GetItemById(id);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve item.", ex);
+                throw;
+            }
         }
 
         public async Task<List<Item>> GetAllItems()
         {
-            return await _itemRepo.GetAllItems();
+            using var activity = _tracer.StartActiveSpan("GetAllItems service");
+            try
+            {
+                return await _itemRepo.GetAllItems();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve items.", ex);
+                throw;
+            }
         }
 
         public async Task UpdateItem(int id, ItemDto itemDto)
         {
+            using var activity = _tracer.StartActiveSpan("UpdateItem service");
             try
             {
                 var existingItem = await _itemRepo.GetItemById(id);
@@ -45,25 +77,40 @@ namespace InventoryService.Services
                 existingItem.Quantity = itemDto.Quantity;
 
                 await _itemRepo.UpdateItem(existingItem);
-
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-
-                throw new Exception("error: " + e);
+                Monitoring.Log.Error("Unable to update item.", ex);
+                throw;
             }
         }
-
 
         public async Task DeleteItem(int id)
         {
-            await _itemRepo.DeleteItem(id);
+            using var activity = _tracer.StartActiveSpan("DeleteItem service");
+            try
+            {
+                await _itemRepo.DeleteItem(id);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to delete item.", ex);
+                throw;
+            }
         }
-        
+
         public void RebuildDB()
         {
-            _itemRepo.RebuildDB();
+            using var activity = _tracer.StartActiveSpan("RebuildDB service");
+            try
+            {
+                _itemRepo.RebuildDB();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to rebuild database.", ex);
+                throw;
+            }
         }
     }
-
 }
