@@ -48,6 +48,20 @@ namespace OrderService.Services
                 throw;
             }
         }
+        
+        public async Task<Order> AssignItemsIds(int id, List<int> ids)
+        {
+            using var activity = _tracer.StartActiveSpan("AssignItemsIds service");
+            try
+            {
+                return await _orderRepo.AssignItemsIds(id, ids);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to assign ids.", ex);
+                throw;
+            }
+        }
 
         public async Task<List<Order>> GetAllOrders()
         {

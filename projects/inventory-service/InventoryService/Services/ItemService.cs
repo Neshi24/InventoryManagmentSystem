@@ -61,7 +61,37 @@ namespace InventoryService.Services
                 throw;
             }
         }
+        
+        public async Task<List<Item>> GetItemsByIds(List<int> ids)
+        {
+            using var activity = _tracer.StartActiveSpan("GetItemsByIds service");
+            try
+            {
+                return await _itemRepo.GetItemsByIds(ids);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve items basing on id.", ex);
+                throw;
+            }
+        }
 
+        
+        public async Task<List<int>> GetMissingIds(List<int> ids)
+        {
+            using var activity = _tracer.StartActiveSpan("GetItemsByIds service");
+            try
+            {
+                return await _itemRepo.GetMissingIds(ids);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve items basing on id.", ex);
+                throw;
+            }
+        }
+        
+        
         public async Task UpdateItem(int id, ItemDto itemDto)
         {
             using var activity = _tracer.StartActiveSpan("UpdateItem service");

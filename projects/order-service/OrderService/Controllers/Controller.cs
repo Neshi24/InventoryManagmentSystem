@@ -69,6 +69,22 @@ namespace OrderService.Controllers
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
+        
+        [HttpGet]
+        public async Task<ActionResult<Order>> AssignItemsIds([FromBody] int id, List<int> ids)
+        {
+            using var activity = _tracer.StartActiveSpan("AssignItemsIds controller");
+            try
+            {
+                var order = await _orderService.AssignItemsIds(id, ids);
+                return order;
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to assign ids.", ex);
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDto orderDto)
