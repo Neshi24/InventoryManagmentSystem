@@ -11,10 +11,17 @@ namespace OrderService.RabbitMQ
             _bus = bus;
         }
 
-        public void Listen<T>(Action<T> handler, string queueName)
+        public void Listen<T>(Action<T> handler, string subscriptionId)
         {
-            _bus.PubSub.Subscribe(queueName, handler);
+            _bus.PubSub.Subscribe<T>(subscriptionId, handler);
         }
-
+        
+        
+        public void Publish<T>(T message)
+        {
+            Console.WriteLine("Publishing message");
+            _bus.PubSub.Publish(message);
+            Console.WriteLine("Message published");
+        }
     }
 }

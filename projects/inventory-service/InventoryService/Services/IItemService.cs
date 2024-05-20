@@ -10,7 +10,7 @@ namespace InventoryService.Services
         Task<Item> GetItemById(int id);
         Task<List<Item>> GetAllItems();
         Task<List<Item>> GetItemsByIds(List<int> ids);
-        Task<List<int>> GetMissingIds(List<int> ids);
+        Task<List<int>> GetMissingIds(MessageIds messageIds);
         Task UpdateItem(int id, ItemDto itemDto);
         Task DeleteItem(int id);
         void RebuildDB();

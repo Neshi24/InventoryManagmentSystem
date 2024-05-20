@@ -84,22 +84,6 @@ namespace InventoryService.Controllers
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
-        
-        [HttpGet]
-        public async Task<ActionResult<List<int>>> GetMissingIds(List<int> ids)
-        {
-            using var activity = _tracer.StartActiveSpan("GetItemsByIds controller");
-            try
-            {
-                var items = await _itemService.GetMissingIds(ids);
-                return items;
-            }
-            catch (Exception ex)
-            {
-                Monitoring.Log.Error("Unable to retrieve missing ids.", ex);
-                return BadRequest($"An error occurred: {ex.Message}");
-            }
-        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateItem(int id, [FromBody] ItemDto itemDto)

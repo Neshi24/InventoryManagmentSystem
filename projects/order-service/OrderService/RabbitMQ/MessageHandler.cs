@@ -1,50 +1,38 @@
 ﻿using EasyNetQ;
 using Shared;
 
-namespace OrderService.RabbitMQ
+namespace OrderService.RabbitMQ;
+
+public class MessageHandler : BackgroundService
 {
-    public class MessageHandler : BackgroundService
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public MessageHandler(IServiceProvider serviceProvider)
+        try
         {
-            _serviceProvider = serviceProvider;
-        }
+            var connectionStr = "amqp://guest:guest@rabbitmq:5672/";
+            var bus = RabbitHutch.CreateBus(connectionStr);
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            using (var scope = _serviceProvider.CreateScope())
+            var messageClient = new MessageClient(bus);
+            
+            messageClient.Listen<MessageIds>(message =>
             {
-                
-                var connectionStr = "amqp://guest:guest@rabbitmq:5672/";
-
-              
-                var messageClient = new MessageClient(RabbitHutch.CreateBus(connectionStr));
-                
-                messageClient.Listen<List<Item>>(
-                    OnMessageReceived,
-                    "notificationSubscription"
-                );
-
-                void OnMessageReceived(List<Item> item)
-                {
-                    try
-                    {
-                        //TODO add items to order
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                }
-
-                while (!stoppingToken.IsCancellationRequested)
-                {
-                    Console.WriteLine("MessageHandler is listening for notifications.");
-                    await Task.Delay(1000, stoppingToken);
-                }
+                Console.WriteLine($"Received message: {message}");
+            }, "missingItems");
+            
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                Console.WriteLine("MessageHandler is listening.");
+                await Task.Delay(1000, stoppingToken);
             }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error occurred: {e.Message}");
+            throw;
+        }
+        finally
+        {
+            Console.WriteLine("MessageHandler is stopping.");
         }
     }
 }

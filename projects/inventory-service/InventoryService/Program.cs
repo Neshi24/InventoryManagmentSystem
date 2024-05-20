@@ -1,5 +1,7 @@
 using AutoMapper;
 using CommonPackage;
+using EasyNetQ;
+using InventoryService.RabbitMQ;
 using Microsoft.EntityFrameworkCore;
 using InventoryService.Repo;
 using InventoryService.Services;
@@ -20,6 +22,10 @@ var config = new MapperConfiguration(conf =>
 {
     conf.CreateMap<ItemDto, Item>();
 });
+var connectionStr = "amqp://guest:guest@rabbitmq";
+
+builder.Services.AddSingleton(new MessageClient(RabbitHutch.CreateBus(connectionStr)));
+builder.Services.AddHostedService<MessageHandler>();
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IItemRepo, ItemRepo>();
 builder.Services.AddScoped<IItemService, ItemService>();

@@ -27,7 +27,7 @@ public class OrderDto
     public List<int> ItemsIds { get; set; }
 }
 
-public class Message
+public class MessageIds
 {
     public int OrderId { get; set; }
     public List<int> ItemsIds { get; set; }

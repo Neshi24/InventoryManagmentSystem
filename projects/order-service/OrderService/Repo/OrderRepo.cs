@@ -1,5 +1,6 @@
 ﻿using CommonPackage;
 using Microsoft.EntityFrameworkCore;
+using OrderService.RabbitMQ;
 using Shared;
 
 namespace OrderService.Repo
@@ -7,10 +8,12 @@ namespace OrderService.Repo
     public class OrderRepo : IOrderRepo
     {
         private readonly DbContext _context;
+        private readonly MessageClient _messageClient;
 
-        public OrderRepo(DbContext context)
+        public OrderRepo(DbContext context, MessageClient messageClient)
         {
             _context = context;
+            _messageClient = messageClient;
         }
 
         public async Task CreateOrder(Order order)
@@ -19,6 +22,12 @@ namespace OrderService.Repo
             {
                 _context.OrderTable.Add(order);
                 await _context.SaveChangesAsync();
+                var messageIds = new MessageIds
+                {
+                    OrderId = order.Id,
+                    ItemsIds = order.ItemsIds
+                };
+                _messageClient.Publish(messageIds);
             }
             catch (Exception ex)
             {

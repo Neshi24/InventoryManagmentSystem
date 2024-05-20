@@ -1,6 +1,7 @@
 ﻿using InventoryService.Repo;
 using AutoMapper;
 using CommonPackage;
+using InventoryService.RabbitMQ;
 using OpenTelemetry.Trace;
 using Shared;
 
@@ -11,12 +12,14 @@ namespace InventoryService.Services
         private readonly IItemRepo _itemRepo;
         private readonly IMapper _mapper;
         private readonly Tracer _tracer;
+        private readonly MessageClient _messageClient;
 
-        public ItemService(IItemRepo itemRepo, IMapper mapper, Tracer tracer)
+        public ItemService(IItemRepo itemRepo, IMapper mapper, Tracer tracer, MessageClient messageClient)
         {
             _itemRepo = itemRepo;
             _mapper = mapper;
             _tracer = tracer;
+            _messageClient = messageClient;
         }
 
         public async Task CreateItem(ItemDto itemDto)
@@ -77,12 +80,18 @@ namespace InventoryService.Services
         }
 
         
-        public async Task<List<int>> GetMissingIds(List<int> ids)
+        public async Task<List<int>> GetMissingIds(MessageIds messageIds)
         {
             using var activity = _tracer.StartActiveSpan("GetItemsByIds service");
             try
             {
-                return await _itemRepo.GetMissingIds(ids);
+                var newMessageIds = new MessageIds
+                {
+                    ItemsIds = await _itemRepo.GetMissingIds(messageIds.ItemsIds),
+                    OrderId = messageIds.OrderId
+                };
+                _messageClient.Publish(newMessageIds);
+                return newMessageIds.ItemsIds;
             }
             catch (Exception ex)
             {

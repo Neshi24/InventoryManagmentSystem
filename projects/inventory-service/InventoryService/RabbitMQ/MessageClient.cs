@@ -15,7 +15,8 @@ namespace InventoryService.RabbitMQ
         {
             _bus.PubSub.Subscribe<T>(subscriptionId, handler);
         }
-
+        
+        
         public void Publish<T>(T message)
         {
             Console.WriteLine("Publishing message");
