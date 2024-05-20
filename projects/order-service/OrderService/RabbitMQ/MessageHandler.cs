@@ -1,24 +1,21 @@
 ﻿using EasyNetQ;
-using OrderService.Services;
 using Shared;
 
-namespace OrderService.RabbitMQ;
-
-public class MessageHandler : BackgroundService
+namespace OrderService.RabbitMQ
 {
-    private readonly IServiceProvider _serviceProvider;
-    public MessageHandler(IServiceProvider serviceProvider)
+    public class MessageHandler : BackgroundService
     {
-        _serviceProvider = serviceProvider;
-    }
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        using (var scope = _serviceProvider.CreateScope())
+        private readonly IServiceProvider _serviceProvider;
+
+        public MessageHandler(IServiceProvider serviceProvider)
         {
-            var itemService = scope.ServiceProvider.GetRequiredService<IOrderService>();
+            _serviceProvider = serviceProvider;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
             
             var connectionStr = "amqp://guest:guest@rabbitmq:5672/";
-
             var messageClient = new MessageClient(RabbitHutch.CreateBus(connectionStr));
 
             messageClient.Listen<MessageIds>(
@@ -30,9 +27,8 @@ public class MessageHandler : BackgroundService
             {
                 try
                 {
-                    Console.WriteLine($"Received message: OrderId = {messageIds.OrderId}, ItemsIds = [{string.Join(", ", messageIds.ItemsIds)}]");
-                    itemService.GetOrderById(messageIds.OrderId);
-
+                    Console.WriteLine(
+                        $"Received message: OrderId = {messageIds.OrderId}, ItemsIds = [{string.Join(", ", messageIds.ItemsIds)}]");
                 }
                 catch (Exception e)
                 {
@@ -46,6 +42,6 @@ public class MessageHandler : BackgroundService
                 await Task.Delay(1000, stoppingToken);
             }
         }
+
     }
-        
 }
