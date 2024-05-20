@@ -22,6 +22,9 @@ var config = new MapperConfiguration(conf =>
 {
     conf.CreateMap<ItemDto, Item>();
 });
+var connectionStr = "amqp://guest:guest@rabbitmq";
+
+builder.Services.AddSingleton(new MessageClient(RabbitHutch.CreateBus(connectionStr)));
 builder.Services.AddHostedService<MessageHandler>();
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IItemRepo, ItemRepo>();
