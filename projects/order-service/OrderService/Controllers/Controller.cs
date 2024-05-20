@@ -19,7 +19,7 @@ namespace OrderService.Controllers
             _tracer = tracer;
         }
 
-        [HttpPost]
+        [HttpPost("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto orderDto)
         {
             using var activity = _tracer.StartActiveSpan("CreateOrder controller");
