@@ -48,21 +48,6 @@ namespace OrderService.Repo
                 throw;
             }
         }
-        
-        public async Task<Order> AssignItemsIds(int id, List<int> ids)
-        {
-            try
-            {
-                var order = await GetOrderById(id);
-                order.ItemsIds = ids;
-                return order;
-            }
-            catch (Exception ex)
-            {
-                Monitoring.Log.Error("Unable to assign ids.", ex);
-                throw;
-            }
-        }
 
         public async Task<List<Order>> GetAllOrders()
         {
