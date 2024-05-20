@@ -16,8 +16,9 @@ public class MessageHandler : BackgroundService
             
             messageClient.Listen<MessageIds>(message =>
             {
-                Console.WriteLine($"Received message: {message}");
+                Console.WriteLine($"Received message: {message.ItemsIds}");
             }, "missingItems");
+            
             
             while (!stoppingToken.IsCancellationRequested)
             {
