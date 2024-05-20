@@ -5,11 +5,9 @@ namespace OrderService.RabbitMQ
 {
     public class MessageHandler : BackgroundService
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public MessageHandler(IServiceProvider serviceProvider)
+        
+        public MessageHandler()
         {
-            _serviceProvider = serviceProvider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
