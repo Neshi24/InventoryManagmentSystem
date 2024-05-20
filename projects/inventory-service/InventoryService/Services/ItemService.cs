@@ -90,7 +90,9 @@ namespace InventoryService.Services
                     ItemsIds = await _itemRepo.GetMissingIds(messageIds.ItemsIds),
                     OrderId = messageIds.OrderId
                 };
+                
                 _messageClient.Publish(newMessageIds);
+                
                 return newMessageIds.ItemsIds;
             }
             catch (Exception ex)
