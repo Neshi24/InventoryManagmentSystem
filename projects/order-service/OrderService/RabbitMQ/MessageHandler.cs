@@ -10,19 +10,29 @@ public class MessageHandler : BackgroundService
         try
         {
             var connectionStr = "amqp://guest:guest@rabbitmq:5672/";
-            var bus = RabbitHutch.CreateBus(connectionStr);
+                
+            var messageClient = new MessageClient(RabbitHutch.CreateBus(connectionStr));
+            
+            messageClient.Listen<MessageIds>(
+                OnMessageReceived,
+                "missingItems"
+            );
 
-            var messageClient = new MessageClient(bus);
-            
-            messageClient.Listen<MessageIds>(message =>
+            void OnMessageReceived(MessageIds messageIds)
             {
-                Console.WriteLine($"Received message: {message.ItemsIds}");
-            }, "missingItems");
-            
+                try
+                {
+                    Console.WriteLine($"Received message: OrderId = {messageIds.OrderId}, ItemsIds = [{string.Join(", ", messageIds.ItemsIds)}]");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
             
             while (!stoppingToken.IsCancellationRequested)
             {
-                Console.WriteLine("MessageHandler is listening.");
+                Console.WriteLine("MessageHandler is listening for missing items.");
                 await Task.Delay(1000, stoppingToken);
             }
         }

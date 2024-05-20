@@ -43,7 +43,7 @@ namespace InventoryService.RabbitMQ
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    Console.WriteLine("MessageHandler is listening for notifications.");
+                    Console.WriteLine("MessageHandler is listening for order creation.");
                     await Task.Delay(1000, stoppingToken);
                 }
             }
