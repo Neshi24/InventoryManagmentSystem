@@ -54,7 +54,7 @@ namespace OrderService.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("GetAllOrders")]
         public async Task<ActionResult<List<Order>>> GetAllOrders()
         {
             using var activity = _tracer.StartActiveSpan("GetAllOrders controller");

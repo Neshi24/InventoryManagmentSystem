@@ -20,6 +20,7 @@ namespace InventoryService.Controllers
         }
 
         [HttpPost]
+        [Route("CreateItem")]
         public async Task<IActionResult> CreateItem([FromBody] ItemDto itemDto)
         {
             using var activity = _tracer.StartActiveSpan("CreateItem controller");
@@ -55,6 +56,7 @@ namespace InventoryService.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllItems")]
         public async Task<ActionResult<List<Item>>> GetAllItems()
         {
             using var activity = _tracer.StartActiveSpan("GetAllItems controller");
@@ -70,6 +72,7 @@ namespace InventoryService.Controllers
             }
         }
         [HttpGet]
+        [Route("GetItemsByIds")]
         public async Task<ActionResult<List<Item>>> GetItemsByIds(List<int> ids)
         {
             using var activity = _tracer.StartActiveSpan("GetItemsByIds controller");
