@@ -1,3 +1,4 @@
+
 using AutoMapper;
 using CommonPackage;
 using EasyNetQ;
@@ -22,6 +23,8 @@ builder.Services.AddDbContext<DbContext>(options =>
 var config = new MapperConfiguration(conf =>
 {
     conf.CreateMap<OrderDto, Order>();
+    conf.CreateMap<MessageIdsDto, MessageIds>();
+    
 });
 var connectionStr = "amqp://guest:guest@rabbitmq";
 
