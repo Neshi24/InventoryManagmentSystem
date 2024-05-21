@@ -12,6 +12,9 @@ namespace OrderService.Repo
         }
 
         public DbSet<Order> OrderTable { get; set; }
+        public DbSet<MessageIds> OrderMissingItemsTable { get; set; }
+        
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -25,6 +28,8 @@ namespace OrderService.Repo
         {
             modelBuilder.Entity<Order>()
                 .HasKey(o => o.Id);
+            modelBuilder.Entity<MessageIds>()
+                .HasKey(m => m.Id);
         }
 
     }

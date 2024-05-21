@@ -22,7 +22,7 @@ namespace OrderService.Repo
             {
                 _context.OrderTable.Add(order);
                 await _context.SaveChangesAsync();
-                var messageIds = new MessageIds
+                var messageIds = new MessageIdsDto
                 {
                     OrderId = order.Id,
                     ItemsIds = order.ItemsIds
@@ -35,6 +35,21 @@ namespace OrderService.Repo
                 throw;
             }
         }
+        
+        public async Task CreateMissingItemHistory(MessageIds messageIds)
+        {
+            try
+            {
+                _context.OrderMissingItemsTable.Add(messageIds);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to create MissingItemHistory.", ex);
+                throw;
+            }
+        }
+        
 
         public async Task<Order> GetOrderById(int id)
         {

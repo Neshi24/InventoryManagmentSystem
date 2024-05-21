@@ -24,12 +24,12 @@ namespace InventoryService.RabbitMQ
                 
                 var messageClient = new MessageClient(RabbitHutch.CreateBus(connectionStr));
                 
-                messageClient.Listen<MessageIds>(
+                messageClient.Listen<MessageIdsDto>(
                     OnMessageReceived,
                     "orderCreation"
                 );
 
-                void OnMessageReceived(MessageIds messageIds)
+                void OnMessageReceived(MessageIdsDto messageIds)
                 {
                     try
                     {

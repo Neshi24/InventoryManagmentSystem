@@ -80,15 +80,15 @@ namespace InventoryService.Services
         }
 
         
-        public async Task<List<int>> GetMissingIds(MessageIds messageIds)
+        public async Task<List<int>> GetMissingIds(MessageIdsDto messageIdsDto)
         {
             using var activity = _tracer.StartActiveSpan("GetItemsByIds service");
             try
             {
-                var newMessageIds = new MessageIds
+                var newMessageIds = new MessageIdsDto
                 {
-                    ItemsIds = await _itemRepo.GetMissingIds(messageIds.ItemsIds),
-                    OrderId = messageIds.OrderId
+                    ItemsIds = await _itemRepo.GetMissingIds(messageIdsDto.ItemsIds),
+                    OrderId = messageIdsDto.OrderId
                 };       
                 _messageClient.Publish(newMessageIds);
 

@@ -34,6 +34,21 @@ namespace OrderService.Services
                 throw;
             }
         }
+        
+        public async Task CreateMissingItemHistory(MessageIdsDto messageIdsDto)
+        {
+            using var activity = _tracer.StartActiveSpan("CreateMissingItemHistory service");
+            try
+            {
+                var missingItemHistory = _mapper.Map<MessageIds>(messageIdsDto);
+                await _orderRepo.CreateMissingItemHistory(missingItemHistory);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to create MissingItemHistory.", ex);
+                throw;
+            }
+        }
 
         public async Task<Order> GetOrderById(int id)
         {
