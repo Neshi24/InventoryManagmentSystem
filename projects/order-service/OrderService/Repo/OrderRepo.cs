@@ -27,7 +27,8 @@ namespace OrderService.Repo
                     OrderId = order.Id,
                     ItemsIds = order.ItemsIds
                 };
-                _messageClient.Publish(messageIds);
+                var queueName = "orderCreation";
+                _messageClient.Publish(messageIds, queueName);
             }
             catch (Exception ex)
             {

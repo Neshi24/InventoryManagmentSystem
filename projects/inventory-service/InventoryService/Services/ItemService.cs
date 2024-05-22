@@ -89,8 +89,11 @@ namespace InventoryService.Services
                 {
                     ItemsIds = await _itemRepo.GetMissingIds(messageIdsDto.ItemsIds),
                     OrderId = messageIdsDto.OrderId
-                };       
-                _messageClient.Publish(newMessageIds);
+                };
+
+                
+                var queueName = "missingItems";
+                _messageClient.Publish(newMessageIds, queueName);
 
                 return newMessageIds.ItemsIds;
             }
@@ -100,6 +103,7 @@ namespace InventoryService.Services
                 throw;
             }
         }
+
         
         
         public async Task UpdateItem(int id, ItemDto itemDto)

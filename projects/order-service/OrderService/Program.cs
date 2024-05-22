@@ -1,19 +1,17 @@
-
 using AutoMapper;
 using CommonPackage;
 using EasyNetQ;
+using OrderService.RabbitMQ;
+using Microsoft.EntityFrameworkCore;
 using OrderService.Repo;
 using OrderService.Services;
-using Shared;
-using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Trace;
-using OrderService.RabbitMQ;
+using Shared;
 using DbContext = OrderService.Repo.DbContext;
-
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8082");
-var serviceName = "InventoryService";
+var serviceName = "OrderService";
 var serviceVersion = "1.0.0";
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
@@ -23,12 +21,13 @@ builder.Services.AddDbContext<DbContext>(options =>
 var config = new MapperConfiguration(conf =>
 {
     conf.CreateMap<OrderDto, Order>();
-    conf.CreateMap<MessageIdsDto, MessageIds>();
-    
 });
 var connectionStr = "amqp://guest:guest@rabbitmq";
+var hostname = "rabbitmq"; // Hostname for RabbitMQ connection
 
-builder.Services.AddSingleton(new MessageClient(RabbitHutch.CreateBus(connectionStr)));
+// Register the MessageClient with the DI container
+builder.Services.AddSingleton<MessageClient>(sp =>
+    new MessageClient(RabbitHutch.CreateBus(connectionStr), hostname));
 builder.Services.AddHostedService<MessageHandler>();
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();

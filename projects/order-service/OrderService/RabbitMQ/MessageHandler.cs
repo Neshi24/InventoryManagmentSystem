@@ -1,28 +1,28 @@
-﻿using EasyNetQ;
+﻿
 using OrderService.Services;
 using Shared;
+
 
 namespace OrderService.RabbitMQ
 {
     public class MessageHandler : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        public MessageHandler(IServiceProvider serviceProvider)
+        private readonly MessageClient _messageClient;
+
+        public MessageHandler(IServiceProvider serviceProvider, MessageClient messageClient)
         {
             _serviceProvider = serviceProvider;
+            _messageClient = messageClient;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-
-
                 var orderService = scope.ServiceProvider.GetRequiredService<IOrderService>();
-                var connectionStr = "amqp://guest:guest@rabbitmq:5672/";
-                var messageClient = new MessageClient(RabbitHutch.CreateBus(connectionStr));
 
-                messageClient.Listen<MessageIdsDto>(
+                _messageClient.Listen<MessageIdsDto>(
                     OnMessageReceived,
                     "missingItems"
                 );
@@ -48,6 +48,5 @@ namespace OrderService.RabbitMQ
                 }
             }
         }
-
     }
 }

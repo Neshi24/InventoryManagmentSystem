@@ -1,5 +1,4 @@
-﻿using EasyNetQ;
-using InventoryService.Services;
+﻿using InventoryService.Services;
 using Shared;
 
 namespace InventoryService.RabbitMQ
@@ -7,24 +6,21 @@ namespace InventoryService.RabbitMQ
     public class MessageHandler : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly MessageClient _messageClient;
 
-        public MessageHandler(IServiceProvider serviceProvider)
+        public MessageHandler(IServiceProvider serviceProvider, MessageClient messageClient)
         {
             _serviceProvider = serviceProvider;
+            _messageClient = messageClient;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                
                 var itemService = scope.ServiceProvider.GetRequiredService<IItemService>();
-               
-                var connectionStr = "amqp://guest:guest@rabbitmq:5672/";
-                
-                var messageClient = new MessageClient(RabbitHutch.CreateBus(connectionStr));
-                
-                messageClient.Listen<MessageIdsDto>(
+
+                _messageClient.Listen<MessageIdsDto>(
                     OnMessageReceived,
                     "orderCreation"
                 );
