@@ -52,6 +52,39 @@ namespace InventoryService.Repo
                 throw;
             }
         }
+        
+        public async Task<List<Item>> GetItemsByIds(List<int> ids)
+        {
+            try
+            {
+                return await _context.ItemTable.Where(item => ids.Contains(item.Id)).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve items by ids.", ex);
+                throw;
+            }
+        }
+        
+        public async Task<List<int>> GetMissingIds(List<int> ids)
+        {
+            try
+            {
+                var existingIds = await _context.ItemTable
+                    .Where(item => ids.Contains(item.Id))
+                    .Select(item => item.Id)
+                    .ToListAsync();
+
+                var missingIds = ids.Except(existingIds).ToList();
+
+                return missingIds;
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve missing ids.", ex);
+                throw;
+            }
+        }
 
         public async Task UpdateItem(Item item)
         {

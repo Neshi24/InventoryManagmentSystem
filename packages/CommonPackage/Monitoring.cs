@@ -13,7 +13,6 @@ public static class Monitoring
         //Serilog
         Serilog.Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Verbose()
-            .WriteTo.Console()
             .WriteTo.Seq("http://seq:5341")
             .Enrich.WithSpan()
             .CreateLogger();
@@ -28,13 +27,12 @@ public static class Monitoring
                 {
                     c.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
                 })
-                .AddConsoleExporter()
                 .SetResourceBuilder(
                     ResourceBuilder.CreateDefault()
                         .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
                 .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddConsoleExporter();
+                .AddHttpClientInstrumentation();
+
         });
     }
 }

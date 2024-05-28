@@ -20,6 +20,7 @@ namespace InventoryService.Controllers
         }
 
         [HttpPost]
+        [Route("CreateItem")]
         public async Task<IActionResult> CreateItem([FromBody] ItemDto itemDto)
         {
             using var activity = _tracer.StartActiveSpan("CreateItem controller");
@@ -55,6 +56,7 @@ namespace InventoryService.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllItems")]
         public async Task<ActionResult<List<Item>>> GetAllItems()
         {
             using var activity = _tracer.StartActiveSpan("GetAllItems controller");
@@ -66,6 +68,22 @@ namespace InventoryService.Controllers
             catch (Exception ex)
             {
                 Monitoring.Log.Error("Unable to retrieve items.", ex);
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("GetItemsByIds")]
+        public async Task<ActionResult<List<Item>>> GetItemsByIds(List<int> ids)
+        {
+            using var activity = _tracer.StartActiveSpan("GetItemsByIds controller");
+            try
+            {
+                var items = await _itemService.GetItemsByIds(ids);
+                return items;
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve items basing on ids.", ex);
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }

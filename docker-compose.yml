@@ -25,6 +25,18 @@ services:
       - rps_seq_data1:/data
     environment:
       - ACCEPT_EULA=Y
+    
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3     
 
   InventoryService:
     image: inventoryservice
@@ -33,7 +45,10 @@ services:
       dockerfile: projects/inventory-service/InventoryService/Dockerfile
     ports:
       - "8081:8081"
-
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+        
   OrderService:
     image: orderservice
     build:
@@ -41,7 +56,10 @@ services:
       dockerfile: projects/order-service/OrderService/Dockerfile
     ports:
       - "8082:8082"
-
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+        
   AuthService:
     image: authservice
     build:

@@ -1,6 +1,7 @@
 ﻿using InventoryService.Repo;
 using AutoMapper;
 using CommonPackage;
+using InventoryService.RabbitMQ;
 using OpenTelemetry.Trace;
 using Shared;
 
@@ -11,12 +12,14 @@ namespace InventoryService.Services
         private readonly IItemRepo _itemRepo;
         private readonly IMapper _mapper;
         private readonly Tracer _tracer;
+        private readonly MessageClient _messageClient;
 
-        public ItemService(IItemRepo itemRepo, IMapper mapper, Tracer tracer)
+        public ItemService(IItemRepo itemRepo, IMapper mapper, Tracer tracer, MessageClient messageClient)
         {
             _itemRepo = itemRepo;
             _mapper = mapper;
             _tracer = tracer;
+            _messageClient = messageClient;
         }
 
         public async Task CreateItem(ItemDto itemDto)
@@ -61,7 +64,48 @@ namespace InventoryService.Services
                 throw;
             }
         }
+        
+        public async Task<List<Item>> GetItemsByIds(List<int> ids)
+        {
+            using var activity = _tracer.StartActiveSpan("GetItemsByIds service");
+            try
+            {
+                return await _itemRepo.GetItemsByIds(ids);
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve items basing on id.", ex);
+                throw;
+            }
+        }
 
+        
+        public async Task<List<int>> GetMissingIds(MessageIdsDto messageIdsDto)
+        {
+            using var activity = _tracer.StartActiveSpan("GetItemsByIds service");
+            try
+            {
+                var newMessageIds = new MessageIdsDto
+                {
+                    ItemsIds = await _itemRepo.GetMissingIds(messageIdsDto.ItemsIds),
+                    OrderId = messageIdsDto.OrderId
+                };
+
+                
+                var queueName = "missingItems";
+                _messageClient.Publish(newMessageIds, queueName);
+
+                return newMessageIds.ItemsIds;
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve items basing on id.", ex);
+                throw;
+            }
+        }
+
+        
+        
         public async Task UpdateItem(int id, ItemDto itemDto)
         {
             using var activity = _tracer.StartActiveSpan("UpdateItem service");

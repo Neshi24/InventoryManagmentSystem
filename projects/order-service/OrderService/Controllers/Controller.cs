@@ -19,7 +19,7 @@ namespace OrderService.Controllers
             _tracer = tracer;
         }
 
-        [HttpPost]
+        [HttpPost("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto orderDto)
         {
             using var activity = _tracer.StartActiveSpan("CreateOrder controller");
@@ -54,7 +54,7 @@ namespace OrderService.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("GetAllOrders")]
         public async Task<ActionResult<List<Order>>> GetAllOrders()
         {
             using var activity = _tracer.StartActiveSpan("GetAllOrders controller");

@@ -26,3 +26,17 @@ public class OrderDto
     public string Address { get; set; }
     public List<int> ItemsIds { get; set; }
 }
+
+public class MessageIds
+{
+    public int Id { get; set; }
+    public int OrderId { get; set; }
+    public List<int> ItemsIds { get; set; }
+}
+
+public class MessageIdsDto
+{
+    public int OrderId { get; set; }
+    public List<int> ItemsIds { get; set; }
+}
+
