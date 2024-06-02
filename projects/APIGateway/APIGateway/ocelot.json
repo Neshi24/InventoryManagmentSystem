@@ -3,11 +3,11 @@
     {
       "UpstreamPathTemplate": "/Item/{everything}",
       "UpstreamHttpMethod": ["Get", "Post", "Delete", "Put"],
-      "DownstreamPathTemplate": "/InventoryService",
+      "DownstreamPathTemplate": "/inventoryService",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "InventoryService",
+          "Host": "inventoryService",
           "Port": 80
         }
       ]
@@ -15,11 +15,11 @@
     {
       "UpstreamPathTemplate": "/Order/{everything}",
       "UpstreamHttpMethod": ["Get","Post","Delete","Put"],
-      "DownstreamPathTemplate": "/OrderService",
+      "DownstreamPathTemplate": "/orderService",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "OrderService",
+          "Host": "orderService",
           "Port": 80
         }
       ]
@@ -27,11 +27,11 @@
     {
       "UpstreamPathTemplate": "/Auth/{everything}",
       "UpstreamHttpMethod": ["Get","Post","Delete","Put"],
-      "DownstreamPathTemplate": "/AuthService",
+      "DownstreamPathTemplate": "/authService",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "AuthService",
+          "Host": "authService",
           "Port": 80
         }
       ]
