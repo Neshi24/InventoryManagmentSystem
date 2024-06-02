@@ -2,6 +2,7 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:8085");
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddJsonFile("ocelot.json", false, false);
 

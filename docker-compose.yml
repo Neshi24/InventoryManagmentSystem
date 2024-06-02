@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
   sql-server:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -72,3 +72,4 @@ services:
       - apigateway
 volumes:
   rps_seq_data1:
+

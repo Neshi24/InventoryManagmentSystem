@@ -10,6 +10,7 @@ using Shared;
 using DbContext = InventoryService.Repo.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:8081");
 var serviceName = "InventoryService";
 var serviceVersion = "1.0.0";
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
