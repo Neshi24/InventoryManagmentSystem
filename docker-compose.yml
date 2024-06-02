@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
   sql-server:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -6,16 +6,21 @@ services:
     environment:
       SA_PASSWORD: "YourStrong@Passw0rd"  # Set your own strong password here
       ACCEPT_EULA: "Y"
-    ports: 
+    ports:
       - "1433:1433"  # Expose the SQL Server port
     volumes:
       - ./data:/var/opt/mssql/data
-
+  apigateway:
+    image: apigateway
+    build:
+      context: .
+      dockerfile: projects/APIGateway/APIGateway/Dockerfile
+    ports:
+      - "8085:80"
   zipkin:
     image: openzipkin/zipkin
     ports:
       - "9411:9411"
-
   seq:
     image: datalust/seq
     ports:
@@ -25,7 +30,6 @@ services:
       - rps_seq_data1:/data
     environment:
       - ACCEPT_EULA=Y
-    
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
@@ -36,37 +40,36 @@ services:
       test: [ "CMD", "rabbitmqctl", "status" ]
       interval: 10s
       timeout: 5s
-      retries: 3     
-
-  InventoryService:
+      retries: 3
+  inventoryservice:
     image: inventoryservice
     build:
       context: .
       dockerfile: projects/inventory-service/InventoryService/Dockerfile
     ports:
-      - "8081:8081"
+      - "8081:80"
     depends_on:
-      rabbitmq:
-        condition: service_healthy
-        
-  OrderService:
+      - apigateway
+      - rabbitmq
+  orderservice:
     image: orderservice
     build:
       context: .
       dockerfile: projects/order-service/OrderService/Dockerfile
     ports:
-      - "8082:8082"
+      - "8082:80"
     depends_on:
-      rabbitmq:
-        condition: service_healthy
-        
-  AuthService:
+      - apigateway
+      - rabbitmq
+  authservice:
     image: authservice
     build:
       context: .
       dockerfile: projects/auth-service/AuthService/Dockerfile
     ports:
-      - "8083:8083"
-
+      - "8083:80"
+    depends_on:
+      - apigateway
 volumes:
   rps_seq_data1:
+

@@ -22,6 +22,7 @@ namespace InventoryService.Services
             _itemRepo = itemRepo;
             _mapper = mapper;
             _tracer = tracer;
+            _messageClient = messageClient;
 
             _retryPolicy = Policy
                 .Handle<Exception>()
