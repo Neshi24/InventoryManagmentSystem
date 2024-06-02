@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://0.0.0.0:8083");
 var serviceName = "AuthService";
 var serviceVersion = "1.0.0";
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
