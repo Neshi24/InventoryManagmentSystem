@@ -1,6 +1,7 @@
 ﻿using CommonPackage;
 using Microsoft.AspNetCore.Mvc;
 using InventoryService.Services;
+using Microsoft.AspNetCore.Authorization;
 using OpenTelemetry.Trace;
 using Shared;
 
@@ -20,6 +21,7 @@ namespace InventoryService.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("CreateItem")]
         public async Task<IActionResult> CreateItem([FromBody] ItemDto itemDto)
         {
@@ -89,6 +91,7 @@ namespace InventoryService.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateItem(int id, [FromBody] ItemDto itemDto)
         {
             using var activity = _tracer.StartActiveSpan("UpdateItem controller");
@@ -105,6 +108,7 @@ namespace InventoryService.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteItem(int id)
         {
             using var activity = _tracer.StartActiveSpan("DeleteItem controller");
@@ -121,6 +125,7 @@ namespace InventoryService.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("RebuildDB")]
         public IActionResult RebuildDB()
         {

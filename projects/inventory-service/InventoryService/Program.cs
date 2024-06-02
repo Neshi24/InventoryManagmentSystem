@@ -1,13 +1,17 @@
+using System.Text;
 using AutoMapper;
 using CommonPackage;
 using EasyNetQ;
 using InventoryService.RabbitMQ;
-using Microsoft.EntityFrameworkCore;
 using InventoryService.Repo;
 using InventoryService.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Trace;
 using Shared;
 using DbContext = InventoryService.Repo.DbContext;
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8081");
@@ -31,6 +35,39 @@ builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IItemRepo, ItemRepo>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddControllers();
+
+// Configure JWT authentication
+var secretKey = Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("AppSettings:Token"));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                // Log the authentication failure
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                // Log the success of token validation
+                Console.WriteLine("Token validated successfully");
+                return Task.CompletedTask;
+            },
+        };
+    });
+
+// Add authorization services
+builder.Services.AddAuthorization();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Your API", Version = "v1" });

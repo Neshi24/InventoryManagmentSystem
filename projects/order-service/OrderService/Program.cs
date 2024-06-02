@@ -1,13 +1,16 @@
+using System.Text;
 using AutoMapper;
 using CommonPackage;
 using EasyNetQ;
 using OrderService.RabbitMQ;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OrderService.Repo;
 using OrderService.Services;
 using OpenTelemetry.Trace;
 using Shared;
 using DbContext = OrderService.Repo.DbContext;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8082");
@@ -33,6 +36,39 @@ builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IOrderService, OrderService.Services.OrderService>();
 builder.Services.AddControllers();
+
+// Configure authentication
+var secretKey = builder.Configuration.GetValue<string>("AppSettings:Token");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)), 
+            ValidateIssuer = false,
+            ValidateAudience = false,
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                // Log the authentication failure
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                // Log the success of token validation
+                Console.WriteLine("Token validated successfully");
+                return Task.CompletedTask;
+            },
+        };
+    });
+
+// Add authorization services
+builder.Services.AddAuthorization();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Your API", Version = "v1" });
