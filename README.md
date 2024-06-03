@@ -25,7 +25,7 @@ run: kubectl apply -f .
 
 
     
-## API Reference
+## API Reference examples
 
 #### RebuildDb
 
