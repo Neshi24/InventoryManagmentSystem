@@ -1,4 +1,5 @@
 ﻿using CommonPackage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Services;
 using OpenTelemetry.Trace;
@@ -20,6 +21,7 @@ namespace OrderService.Controllers
         }
 
         [HttpPost("CreateOrder")]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto orderDto)
         {
             using var activity = _tracer.StartActiveSpan("CreateOrder controller");
@@ -87,6 +89,7 @@ namespace OrderService.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDto orderDto)
         {
             using var activity = _tracer.StartActiveSpan("UpdateOrder controller");
@@ -103,6 +106,7 @@ namespace OrderService.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             using var activity = _tracer.StartActiveSpan("DeleteOrder controller");
@@ -119,6 +123,7 @@ namespace OrderService.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("RebuildDB")]
         public IActionResult RebuildDB()
         {

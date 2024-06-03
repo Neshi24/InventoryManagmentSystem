@@ -11,8 +11,14 @@ public class User
     public byte[] SaltPassword { get; set; }
 }
 public class UserDto
-{ 
+{
+    [Required]
     public string Username { get; set; }
+
+    [Required]
+    [EmailAddress]
     public string Email { get; set; }
+
+    [Required]
     public string password { get; set; }
 }
