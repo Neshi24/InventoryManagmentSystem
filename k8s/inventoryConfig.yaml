@@ -3,8 +3,5 @@ kind: ConfigMap
 metadata:
   name: inventory-sql-server-config
 data:
-  database: db
-  rabbitMq_User: guest
-  rabbitMq_Password: guest
-  rabbitMq_Host: rabbitmq-service
-  rabbitMq_Port: "5672"
+  database: item-db
+
