@@ -4,7 +4,3 @@ metadata:
   name: auth-sql-server-config
 data:
   database: auth-db
-  rmqUser: guest
-  rmqPass: guest
-  rabbitMq_Host: rabbitmq-service
-  rabbitMq_Port: "5672"
