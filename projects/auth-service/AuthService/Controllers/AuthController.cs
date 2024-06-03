@@ -44,7 +44,6 @@ public class AuthController : ControllerBase
        
     }
     [HttpGet("{userId}")]
-    [Authorize]
     public ActionResult<User> GetUserById(int userId)
     {
         using var activity = _tracer.StartActiveSpan("GetUserById controller");
@@ -68,7 +67,6 @@ public class AuthController : ControllerBase
     }
     
     [HttpPut]
-    [Authorize]
     [Route("update")]
     public ActionResult<User> UpdateUser(int userId, [FromBody] UserDto userDto, string password)
     {
@@ -102,7 +100,6 @@ public class AuthController : ControllerBase
     
     
     [HttpDelete]
-    [Authorize]
     [Route("delete")]
     public ActionResult<User> DeleteUserById(int userId)
     {   
@@ -159,7 +156,6 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost]
-    [Authorize]
     [Route("TestUsers")]
     public void AddTestUsers()
     {
@@ -173,7 +169,6 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost]
-    [Authorize]
     [Route("RebuildDB")]
     public void RebuildDB()
     {
