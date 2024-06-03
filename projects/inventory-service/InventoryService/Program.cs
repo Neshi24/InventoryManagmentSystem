@@ -13,16 +13,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8081");
 var serviceName = "InventoryService";
 var serviceVersion = "1.0.0";
+string sqlServer = Environment.GetEnvironmentVariable("sqlServer") ?? string.Empty;
+string sqlPort = Environment.GetEnvironmentVariable("sqlPort") ?? string.Empty;
+string sqlUser = Environment.GetEnvironmentVariable("sqlUser") ?? string.Empty;
+string database = Environment.GetEnvironmentVariable("database") ?? string.Empty;
+string sqlPass = Environment.GetEnvironmentVariable("SA_PASSWORD") ?? string.Empty;
+string rmqUser = Environment.GetEnvironmentVariable("rmqUser") ?? string.Empty;
+string rmqPass = Environment.GetEnvironmentVariable("rmqPass") ?? string.Empty;
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+
+string connectionString = $"Server={sqlServer},{sqlPort};Database={database};User={sqlUser};Password={sqlPass};TrustServerCertificate=true;";
+Console.WriteLine($"Connection string: {connectionString}");
+
 builder.Services.AddDbContext<DbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryDb")));
+    options.UseSqlServer(connectionString));
 
 var config = new MapperConfiguration(conf =>
 {
     conf.CreateMap<ItemDto, Item>();
 });
-var connectionStr = "amqp://guest:guest@rabbitmq";
+var connectionStr = $"amqp://{rmqUser}:{rmqPass}@rabbitmq";
 var hostname = "rabbitmq";
 
 builder.Services.AddSingleton(new MessageClient(RabbitHutch.CreateBus(connectionStr), hostname));

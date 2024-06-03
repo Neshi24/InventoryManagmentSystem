@@ -7,13 +7,19 @@ using AuthService.Services.Interfaces;
 using AuthService.Services.Utility;
 using AutoMapper;
 using CommonPackage;
-using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Trace;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8083");
 var serviceName = "AuthService";
 var serviceVersion = "1.0.0";
+string sqlServer = Environment.GetEnvironmentVariable("sqlServer") ?? string.Empty;
+string sqlPort = Environment.GetEnvironmentVariable("sqlPort") ?? string.Empty;
+string sqlUser = Environment.GetEnvironmentVariable("sqlUser") ?? string.Empty;
+string database = Environment.GetEnvironmentVariable("database") ?? string.Empty;
+string sqlPass = Environment.GetEnvironmentVariable("SA_PASSWORD") ?? string.Empty;
+
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 
@@ -29,9 +35,12 @@ var config = new MapperConfiguration(conf =>
 var mapper = config.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
+string connectionString = $"Server={sqlServer},{sqlPort};Database={database};User={sqlUser};Password={sqlPass};TrustServerCertificate=true;";
+Console.WriteLine($"Connection string: {connectionString}");
+
 // Configure DbContext
 builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthDatabase")));
+    options.UseSqlServer(connectionString));
 
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
