@@ -27,10 +27,9 @@ run: kubectl apply -f .
     
 ## API Reference examples
 
-#### RebuildDb
+#### AuthController
 
-```http
-  AuthController
+```
 Register
 POST http://localhost:8085/Auth/Register
 
@@ -51,8 +50,9 @@ POST http://localhost:8085/Auth/TestUsers
 
 RebuildDB
 POST http://localhost:8085/Auth/RebuildDB
-
-ItemController
+```
+#### ItemController
+```
 CreateItem
 POST http://localhost:8085/Item/CreateItem
 
@@ -73,8 +73,10 @@ DELETE http://localhost:8085/Item/{id}
 
 RebuildDB
 POST http://localhost:8085/Item/RebuildDB
+```
 
-OrderController
+####OrderController
+```
 CreateOrder
 POST http://localhost:8085/Order/CreateOrder
 
