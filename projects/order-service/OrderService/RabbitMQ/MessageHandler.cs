@@ -44,7 +44,7 @@ namespace OrderService.RabbitMQ
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     Console.WriteLine("MessageHandler is listening for missing items.");
-                    await Task.Delay(1000, stoppingToken);
+                    await Task.Delay(10000, stoppingToken);
                 }
             }
         }

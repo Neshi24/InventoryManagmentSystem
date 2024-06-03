@@ -34,6 +34,7 @@ var config = new MapperConfiguration(conf =>
 
 var connectionStr = $"amqp://{rmqUser}:{rmqPass}@rabbitmq"; // Connection string for RabbitMQ
 var hostname = "rabbitmq"; // Hostname for RabbitMQ connection
+Console.WriteLine($"Connection string: {connectionStr}");
 
 // Register the MessageClient with the DI container
 builder.Services.AddSingleton<MessageClient>(sp =>

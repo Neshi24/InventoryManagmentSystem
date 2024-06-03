@@ -30,6 +30,7 @@ namespace InventoryService.RabbitMQ
                     try
                     {
                         itemService.GetMissingIds(messageIds);
+                        Console.WriteLine("I got something");
                     }
                     catch (Exception e)
                     {
@@ -40,7 +41,7 @@ namespace InventoryService.RabbitMQ
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     Console.WriteLine("MessageHandler is listening for order creation.");
-                    await Task.Delay(1000, stoppingToken);
+                    await Task.Delay(10000, stoppingToken);
                 }
             }
         }
