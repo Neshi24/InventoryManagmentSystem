@@ -27,6 +27,28 @@ run: kubectl apply -f .
     
 ## API Reference examples
 
+#### Body
+```
+Item
+{
+"Name": "test",
+"Quantity": 1
+}
+
+Order
+{
+"Address": "Esbjerg",
+"ItemsIds": [1,2,3]
+}
+
+User
+{
+"Username ": "test",
+"Email": "test@test.dk",
+"password": "test"
+}
+```
+
 #### AuthController
 
 ```
@@ -53,6 +75,7 @@ POST http://localhost:8085/Auth/RebuildDB
 ```
 #### ItemController
 ```
+[auth]
 CreateItem
 POST http://localhost:8085/Item/CreateItem
 
@@ -65,18 +88,22 @@ GET http://localhost:8085/Item/GetAllItems
 GetItemsByIds
 GET http://localhost:8085/Item/GetItemsByIds?ids={ids}
 
+[auth]
 UpdateItem
 PUT http://localhost:8085/Item/{id}
 
+[auth]
 DeleteItem
 DELETE http://localhost:8085/Item/{id}
 
+[auth]
 RebuildDB
 POST http://localhost:8085/Item/RebuildDB
 ```
 
-####OrderController
+#### OrderController
 ```
+[auth]
 CreateOrder
 POST http://localhost:8085/Order/CreateOrder
 
@@ -89,12 +116,15 @@ GET http://localhost:8085/Order/GetAllOrders
 GetAllOrdersHistory
 GET http://localhost:8085/Order/GetAllOrdersHistory
 
+[auth]
 UpdateOrder
 PUT http://localhost:8085/Order/{id}
 
+[auth]
 DeleteOrder
 DELETE http://localhost:8085/Order/{id}
 
+[auth]
 RebuildDB
 POST http://localhost:8085/Order/RebuildDB
 ```
