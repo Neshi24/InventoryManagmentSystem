@@ -9,4 +9,5 @@ data:
   rmqUser: guest
   rmqPass: guest
   rmqHost: rabbitmq-service
+  rmqExchange: exchange
   rmqPort: "5672"

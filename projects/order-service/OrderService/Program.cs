@@ -23,6 +23,7 @@ string database = Environment.GetEnvironmentVariable("database") ?? string.Empty
 string sqlPass = Environment.GetEnvironmentVariable("SA_PASSWORD") ?? string.Empty;
 string rmqUser = Environment.GetEnvironmentVariable("rmqUser") ?? string.Empty;
 string rmqPass = Environment.GetEnvironmentVariable("rmqPass") ?? string.Empty;
+string rmqExchange = Environment.GetEnvironmentVariable("rmqExchange") ?? string.Empty;
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 
@@ -33,6 +34,7 @@ builder.Services.AddDbContext<DbContext>(options =>
 var config = new MapperConfiguration(conf =>
 {
     conf.CreateMap<OrderDto, Order>();
+    conf.CreateMap<MessageIdsDto, MessageIds>();
 });
 
 var connectionStr = $"amqp://{rmqUser}:{rmqPass}@rabbitmq"; // Connection string for RabbitMQ
@@ -41,7 +43,7 @@ Console.WriteLine($"Connection string: {connectionStr}");
 
 // Register the MessageClient with the DI container
 builder.Services.AddSingleton<MessageClient>(sp =>
-    new MessageClient(RabbitHutch.CreateBus(connectionStr), hostname));
+    new MessageClient(RabbitHutch.CreateBus(connectionStr), hostname, rmqExchange));
 builder.Services.AddHostedService<MessageHandler>();
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();

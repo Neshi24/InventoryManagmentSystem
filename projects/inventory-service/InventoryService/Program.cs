@@ -24,6 +24,7 @@ string database = Environment.GetEnvironmentVariable("database") ?? string.Empty
 string sqlPass = Environment.GetEnvironmentVariable("SA_PASSWORD") ?? string.Empty;
 string rmqUser = Environment.GetEnvironmentVariable("rmqUser") ?? string.Empty;
 string rmqPass = Environment.GetEnvironmentVariable("rmqPass") ?? string.Empty;
+string rmqExchange = Environment.GetEnvironmentVariable("rmqExchange") ?? string.Empty;
 
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
@@ -42,7 +43,7 @@ var connectionStr = $"amqp://{rmqUser}:{rmqPass}@rabbitmq";
 Console.WriteLine($"Connection string: {connectionStr}");
 var hostname = "rabbitmq";
 
-builder.Services.AddSingleton(new MessageClient(RabbitHutch.CreateBus(connectionStr), hostname));
+builder.Services.AddSingleton(new MessageClient(RabbitHutch.CreateBus(connectionStr), hostname, rmqExchange));
 builder.Services.AddHostedService<MessageHandler>();
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IItemRepo, ItemRepo>();

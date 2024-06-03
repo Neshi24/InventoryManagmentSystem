@@ -22,18 +22,19 @@ namespace OrderService.RabbitMQ
             {
                 var orderService = scope.ServiceProvider.GetRequiredService<IOrderService>();
 
-                _messageClient.Listen<MessageIdsDto>(
+                _messageClient.Consume<MessageIdsDto>(
                     OnMessageReceived,
                     "missingItems"
                 );
 
-                void OnMessageReceived(MessageIdsDto messageIds)
+                async void OnMessageReceived(MessageIdsDto messageIds)
                 {
                     try
                     {
+                        await orderService.CreateMissingItemHistory(messageIds);
+
                         Console.WriteLine(
                             $"Received message: OrderId = {messageIds.OrderId}, ItemsIds = [{string.Join(", ", messageIds.ItemsIds)}]");
-                        orderService.CreateMissingItemHistory(messageIds);
                     }
                     catch (Exception e)
                     {

@@ -20,7 +20,9 @@ namespace InventoryService.RabbitMQ
             {
                 var itemService = scope.ServiceProvider.GetRequiredService<IItemService>();
 
-                _messageClient.Listen<MessageIdsDto>(
+                
+
+                _messageClient.Consume<MessageIdsDto>(
                     OnMessageReceived,
                     "orderCreation"
                 );

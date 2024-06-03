@@ -56,6 +56,8 @@ namespace OrderService.Services
                 try
                 {
                     var missingItemHistory = _mapper.Map<MessageIds>(messageIdsDto);
+                    Console.WriteLine(
+                        $"Received message: OrderId = {messageIdsDto.OrderId}, ItemsIds = [{string.Join(", ", messageIdsDto.ItemsIds)}]");
                     await _orderRepo.CreateMissingItemHistory(missingItemHistory);
                 }
                 catch (Exception ex)
