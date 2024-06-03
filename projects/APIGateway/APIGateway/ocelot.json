@@ -1,0 +1,41 @@
+﻿{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/Item/{everything}",
+      "UpstreamHttpMethod": ["Get", "Post", "Delete", "Put"],
+      "DownstreamPathTemplate": "/item/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "inventory-service",
+          "Port": 8081
+        }
+      ]
+    }
+  ,
+    {
+      "UpstreamPathTemplate": "/Order/{everything}",
+      "UpstreamHttpMethod": ["Get","Post","Delete","Put"],
+      "DownstreamPathTemplate": "/order/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order-service",
+          "Port": 8082
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/Auth/{everything}",
+      "UpstreamHttpMethod": ["Get","Post","Delete","Put"],
+      "DownstreamPathTemplate": "/auth/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth-service",
+          "Port": 8083
+        }
+      ]
+    }
+  ]
+}

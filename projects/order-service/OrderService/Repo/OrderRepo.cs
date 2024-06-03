@@ -77,6 +77,19 @@ namespace OrderService.Repo
                 throw;
             }
         }
+        
+        public async Task<List<MessageIds>> GetAllOrdersHistory()
+        {
+            try
+            {
+                return await _context.OrderMissingItemsTable.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve ordersHistory.", ex);
+                throw;
+            }
+        }
 
         public async Task UpdateOrder(Order order)
         {

@@ -16,17 +16,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8082");
 var serviceName = "OrderService";
 var serviceVersion = "1.0.0";
+string sqlServer = Environment.GetEnvironmentVariable("sqlServer") ?? string.Empty;
+string sqlPort = Environment.GetEnvironmentVariable("sqlPort") ?? string.Empty;
+string sqlUser = Environment.GetEnvironmentVariable("sqlUser") ?? string.Empty;
+string database = Environment.GetEnvironmentVariable("database") ?? string.Empty;
+string sqlPass = Environment.GetEnvironmentVariable("SA_PASSWORD") ?? string.Empty;
+string rmqUser = Environment.GetEnvironmentVariable("rmqUser") ?? string.Empty;
+string rmqPass = Environment.GetEnvironmentVariable("rmqPass") ?? string.Empty;
 builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+
+string connectionString = $"Server={sqlServer},{sqlPort};Database={database};User={sqlUser};Password={sqlPass};TrustServerCertificate=true;";
 builder.Services.AddDbContext<DbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDb")));
+    options.UseSqlServer(connectionString));
 
 var config = new MapperConfiguration(conf =>
 {
     conf.CreateMap<OrderDto, Order>();
 });
-var connectionStr = "amqp://guest:guest@rabbitmq";
+
+var connectionStr = $"amqp://{rmqUser}:{rmqPass}@rabbitmq"; // Connection string for RabbitMQ
 var hostname = "rabbitmq"; // Hostname for RabbitMQ connection
+Console.WriteLine($"Connection string: {connectionStr}");
 
 // Register the MessageClient with the DI container
 builder.Services.AddSingleton<MessageClient>(sp =>

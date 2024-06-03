@@ -71,6 +71,22 @@ namespace OrderService.Controllers
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
+        
+        [HttpGet("GetAllOrdersHistory")]
+        public async Task<ActionResult<List<MessageIds>>> GetAllOrdersHistory()
+        {
+            using var activity = _tracer.StartActiveSpan("GetAllOrdersHistory controller");
+            try
+            {
+                var ordersHistory = await _orderService.GetAllOrdersHistory();
+                return ordersHistory;
+            }
+            catch (Exception ex)
+            {
+                Monitoring.Log.Error("Unable to retrieve ordersHistory.", ex);
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
 
         [HttpPut("{id}")]
         [Authorize]

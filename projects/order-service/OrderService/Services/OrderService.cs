@@ -100,6 +100,23 @@ namespace OrderService.Services
             });
         }
 
+        public async Task<List<MessageIds>> GetAllOrdersHistory()
+        {
+            using var activity = _tracer.StartActiveSpan("GetAllOrdersHistory service");
+            return await _retryPolicy.ExecuteAsync(async () =>
+            {
+                try
+                {
+                    return await _orderRepo.GetAllOrdersHistory();
+                }
+                catch (Exception ex)
+                {
+                    Monitoring.Log.Error("Unable to retrieve ordersHistory.", ex);
+                    throw;
+                }
+            });
+        }
+        
         public async Task UpdateOrder(int id, OrderDto orderDto)
         {
             using var activity = _tracer.StartActiveSpan("UpdateOrder service");
