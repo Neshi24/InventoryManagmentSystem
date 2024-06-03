@@ -55,26 +55,21 @@ User
 Register
 POST http://localhost:8085/Auth/Register
 
-[auth]
 GetUserById
 GET http://localhost:8085/Auth/{userId}
 
-[auth]
 UpdateUser
 PUT http://localhost:8085/Auth/update?userId={userId}
 
-[auth]
 DeleteUserById
 DELETE http://localhost:8085/Auth/delete?userId={userId}
 
 Login
 POST http://localhost:8085/Auth/login
 
-[auth]
 AddTestUsers
 POST http://localhost:8085/Auth/TestUsers
 
-[auth]
 RebuildDB
 POST http://localhost:8085/Auth/RebuildDB
 ```
