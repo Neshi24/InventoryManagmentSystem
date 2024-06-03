@@ -30,12 +30,75 @@ run: kubectl apply -f .
 #### RebuildDb
 
 ```http
-  POST http://localhost:8085/Auth/RebuildDb
+  AuthController
+Register
+POST http://localhost:8085/Auth/Register
 
-  POST http://localhost:8085/Order/RebuildDb
+GetUserById
+GET http://localhost:8085/Auth/{userId}
 
-  POST http://localhost:8085/Item/RebuildDb
+UpdateUser
+PUT http://localhost:8085/Auth/update?userId={userId}
+
+DeleteUserById
+DELETE http://localhost:8085/Auth/delete?userId={userId}
+
+Login
+POST http://localhost:8085/Auth/login
+
+AddTestUsers
+POST http://localhost:8085/Auth/TestUsers
+
+RebuildDB
+POST http://localhost:8085/Auth/RebuildDB
+
+ItemController
+CreateItem
+POST http://localhost:8085/Item/CreateItem
+
+GetItemById
+GET http://localhost:8085/Item/{id}
+
+GetAllItems
+GET http://localhost:8085/Item/GetAllItems
+
+GetItemsByIds
+GET http://localhost:8085/Item/GetItemsByIds?ids={ids}
+
+UpdateItem
+PUT http://localhost:8085/Item/{id}
+
+DeleteItem
+DELETE http://localhost:8085/Item/{id}
+
+RebuildDB
+POST http://localhost:8085/Item/RebuildDB
+
+OrderController
+CreateOrder
+POST http://localhost:8085/Order/CreateOrder
+
+GetOrderById
+GET http://localhost:8085/Order/{id}
+
+GetAllOrders
+GET http://localhost:8085/Order/GetAllOrders
+
+GetAllOrdersHistory
+GET http://localhost:8085/Order/GetAllOrdersHistory
+
+UpdateOrder
+PUT http://localhost:8085/Order/{id}
+
+DeleteOrder
+DELETE http://localhost:8085/Order/{id}
+
+RebuildDB
+POST http://localhost:8085/Order/RebuildDB
 ```
+
+
+
 
 
 
