@@ -7,7 +7,13 @@ A microservice application that uses kubernetes for orchistration.
 
 ## Installation
 
-Install with kubectl.
+Requires* Docker and kubectl
+
+Push docker images:
+
+build images: docker-compose build
+
+Push to cluster:
 
 Get dashboard (optional): kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
 
