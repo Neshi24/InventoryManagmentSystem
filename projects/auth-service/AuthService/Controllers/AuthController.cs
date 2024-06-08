@@ -5,6 +5,7 @@ using AuthService.Services.Utility;
 using CommonPackage;
 using Microsoft.AspNetCore.Mvc;
 using OpenTelemetry.Trace;
+using Serilog;
 
 namespace AuthService.Controllers;
 [ApiController]
@@ -25,23 +26,26 @@ public class AuthController : ControllerBase
     
 
     [HttpPost("Register")]
-    public  ActionResult<User> CreateUser([FromBody] UserDto userDto)
-    { 
+    public ActionResult<User> CreateUser([FromBody] UserDto userDto)
+    {
         using var activity = _tracer.StartActiveSpan("GetAllMeasurementsInMeasurementController");
         try
         {
-            
-            return  _userService.CreateUser(userDto);
+            var createdUser = _userService.CreateUser(userDto);
+            return Ok(createdUser);
+        }
+        catch (ValidationException ve)
+        {
+            Monitoring.Log.Error("Validation error occurred while creating user: {Message}", ve.Message);
+            Log.Error(ve, "Validation error occurred while creating user");
+            return BadRequest(new { error = ve.Message });
         }
         catch (Exception e)
         {
-            Monitoring.Log.Error(
-                "Unable to retrieve Create new user."
-            );
-            Console.WriteLine(e);
-            throw new Exception("controller went worng" +e);
+            Monitoring.Log.Error("An error occurred while creating user: {Message}", e.Message);
+            Log.Error(e, "An error occurred while registering the user");
+            return StatusCode(500, new { error = "An internal server error occurred. Please try again later.", details = e.ToString() });
         }
-       
     }
     [HttpGet("{userId}")]
     public ActionResult<User> GetUserById(int userId)

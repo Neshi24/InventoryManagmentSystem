@@ -46,6 +46,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHashingLogic, HashingLogic>();
+builder.Services.AddScoped<ITracingService, TracingService>();
 builder.Services.AddScoped<HashingLogic>();
 builder.Services.AddScoped<Authentication>();
 
@@ -62,3 +63,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+public partial class Program { }
