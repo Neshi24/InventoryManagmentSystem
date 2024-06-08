@@ -10,22 +10,23 @@ using OpenTelemetry.Trace;
 namespace AuthService.Services.Implementations;
 public class UserService : IUserService
 {
-    private readonly HashingLogic _hashingLogic;
+    private readonly IHashingLogic _hashingLogic;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    private readonly Tracer _tracer;
+    private readonly ITracingService _tracingService;
 
-    public UserService(HashingLogic hashingLogic, IUserRepository userRepository, IMapper mapper, Tracer tracer)
+    public UserService(IHashingLogic hashingLogic, IUserRepository userRepository, IMapper mapper, ITracingService tracingService)
     {
         _hashingLogic = hashingLogic;
         _userRepository = userRepository;
         _mapper = mapper;
-        _tracer = tracer;
+        _tracingService = tracingService;
+        
     }
 
     public User CreateUser(UserDto userDto)
     {
-        using var activity = _tracer.StartActiveSpan("CreateUser service");
+        using var activity = _tracingService.StartActiveSpan("CreateUser service");
         try
         {
             byte[] passwordHash, passwordsalt;
@@ -44,7 +45,7 @@ public class UserService : IUserService
 
     public User GetUserById(int userId)
     {
-        using var activity = _tracer.StartActiveSpan("GetUserById service");
+        using var activity = _tracingService.StartActiveSpan("GetUserById service");
         try
         {
             if (userId == null) throw new ValidationException("Id is invalid");
@@ -59,7 +60,7 @@ public class UserService : IUserService
 
     public User UpdateUser(User user, UserDto userDto)
     {
-        using var activity = _tracer.StartActiveSpan("UpdateUser service");
+        using var activity = _tracingService.StartActiveSpan("UpdateUser service");
         try
         {
             _mapper.Map(userDto, user);
@@ -83,7 +84,7 @@ public class UserService : IUserService
 
     public User DeleteUser(int userId)
     {
-        using var activity = _tracer.StartActiveSpan("DeleteUser service");
+        using var activity = _tracingService.StartActiveSpan("DeleteUser service");
         try
         {
             if (userId == null)
@@ -102,7 +103,7 @@ public class UserService : IUserService
 
     public User GetUserByEmail(string userEmail)
     {
-        using var activity = _tracer.StartActiveSpan("GetUserByEmail service");
+        using var activity = _tracingService.StartActiveSpan("GetUserByEmail service");
         try
         {
             return _userRepository.GetUserByEmail(userEmail);

@@ -45,6 +45,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IHashingLogic, HashingLogic>();
 builder.Services.AddScoped<HashingLogic>();
 builder.Services.AddScoped<Authentication>();
 
