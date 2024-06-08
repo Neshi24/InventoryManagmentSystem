@@ -13,6 +13,7 @@ namespace OrderService.Repo
 
         public DbSet<Order> OrderTable { get; set; }
         public DbSet<MessageIds> OrderMissingItemsTable { get; set; }
+        public DbSet<PerformanceMetrics> PerformanceMetrics { get; set; }
         
         
 

@@ -40,3 +40,16 @@ public class MessageIdsDto
     public List<int> ItemsIds { get; set; }
 }
 
+public class PerformanceMetrics
+    {
+        public int Id { get; set; }
+        public string Endpoint { get; set; }
+        public string HttpMethod { get; set; }
+        public DateTime Timestamp { get; set; }
+        public float InitialCpuUsage { get; set; }
+        public float FinalCpuUsage { get; set; }
+        public float InitialRamAvailable { get; set; }
+        public float FinalRamAvailable { get; set; }
+    }
+
+

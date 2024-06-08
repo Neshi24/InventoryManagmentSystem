@@ -11,12 +11,13 @@ namespace InventoryService.Repo
         }
 
         public DbSet<Item> ItemTable { get; set; }
+        public DbSet<PerformanceMetrics> PerformanceMetrics { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite("Data Source=localdb.db");
+                optionsBuilder.UseSqlite("Data Source=db.db");
             }
         }
         
@@ -24,6 +25,9 @@ namespace InventoryService.Repo
         {
             modelBuilder.Entity<Item>()
                 .HasKey(i => i.Id);
+            modelBuilder.Entity<PerformanceMetrics>()
+                .HasKey(p => p.Id);
+            
         }
 
     }

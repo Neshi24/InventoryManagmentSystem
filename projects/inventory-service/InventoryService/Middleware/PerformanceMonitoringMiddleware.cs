@@ -1,4 +1,6 @@
-﻿using CommonPackage;
+﻿using InventoryService.Repo;
+using CommonPackage;
+using Shared;
 
 namespace InventoryService.Middleware
 {
@@ -6,11 +8,13 @@ namespace InventoryService.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly PerformanceMonitorService _performanceMonitorService;
+        private readonly DbContext _dbContext;
 
-        public PerformanceMonitoringMiddleware(RequestDelegate next, PerformanceMonitorService performanceMonitorService)
+        public PerformanceMonitoringMiddleware(RequestDelegate next, PerformanceMonitorService performanceMonitorService, DbContext dbContext)
         {
             _next = next;
             _performanceMonitorService = performanceMonitorService;
+            _dbContext = dbContext;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -36,6 +40,21 @@ namespace InventoryService.Middleware
             Console.WriteLine($"| {"Final Available RAM (MB)",-30} | {finalRamAvailable,-30:F2} |");
             Console.WriteLine("--------------------------------------------------");
             Console.WriteLine();
+
+            // Store the performance data in the database
+            var performanceMetrics = new PerformanceMetrics
+            {
+                Endpoint = context.Request.Path,
+                HttpMethod = context.Request.Method,
+                Timestamp = DateTime.UtcNow,
+                InitialCpuUsage = initialCpuUsage,
+                FinalCpuUsage = finalCpuUsage,
+                InitialRamAvailable = initialRamAvailable,
+                FinalRamAvailable = finalRamAvailable
+            };
+
+            _dbContext.PerformanceMetrics.Add(performanceMetrics);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
