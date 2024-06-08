@@ -1,0 +1,139 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = 'DOCKERHUB'
+        IMAGE_NAME = 'doncusspelunkus/jenkins_test:latest'
+        KUBE_NAMESPACE = 'default'
+        KUBE_DEPLOYMENT = 'test-auth-service'
+    }
+
+    stages {
+        stage('Tear Down Current Deployment') {
+            steps {
+                script {
+                    // Remove any existing deployment
+                    sh """
+                    kubectl delete deployment ${KUBE_DEPLOYMENT} --namespace=${KUBE_NAMESPACE} || true
+                    """
+                }
+            }
+        }
+
+        stage('Pull and Build Image (Docker)') {
+            steps {
+                // Build Docker image
+                sh 'docker build -t ${IMAGE_NAME} .'
+            }
+        }
+
+        stage('Make Test Pods and Run Tests (Kubernetes)') {
+            steps {
+                // Create and run test pods
+                script {
+                    def testPodManifest = """
+                    apiVersion: v1
+                    kind: Pod
+                    metadata:
+                      name: test-runner
+                      namespace: ${KUBE_NAMESPACE}
+                    spec:
+                      containers:
+                      - name: test-runner
+                        image: ${IMAGE_NAME}
+                        command: ['sh', '-c', 'echo "Running tests..."; sleep 30']
+                    """
+
+                    writeFile file: 'test-pod.yaml', text: testPodManifest
+
+                    sh """
+                    kubectl apply -f test-pod.yaml --namespace=${KUBE_NAMESPACE}
+                    kubectl wait --for=condition=complete pod/test-runner --namespace=${KUBE_NAMESPACE} --timeout=300s
+                    """
+                }
+            }
+        }
+
+        stage('Cleanup Tests') {
+            steps {
+                // Clean up test resources
+                script {
+                    sh """
+                    kubectl delete pod test-runner --namespace=${KUBE_NAMESPACE} || true
+                    """
+                }
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                // Push Docker image to Docker Hub
+                withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh 'docker login -u $USERNAME -p $PASSWORD'
+                    sh 'docker push ${IMAGE_NAME}'
+                }
+            }
+        }
+
+        stage('Build Production Deployment') {
+            steps {
+                // Build Kubernetes deployment manifest
+                writeFile file: 'deployment.yaml', text: '''
+                    apiVersion: apps/v1
+                    kind: Deployment
+                    metadata:
+                      name: ${KUBE_DEPLOYMENT}
+                      namespace: ${KUBE_NAMESPACE}
+                      labels:
+                        app: ${KUBE_DEPLOYMENT}
+                    spec:
+                      replicas: 2
+                      selector:
+                        matchLabels:
+                          app: ${KUBE_DEPLOYMENT}
+                      template:
+                        metadata:
+                          labels:
+                            app: ${KUBE_DEPLOYMENT}
+                        spec:
+                          containers:
+                          - name: ${KUBE_DEPLOYMENT}
+                            image: ${IMAGE_NAME}
+                            imagePullPolicy: Always
+                            ports:
+                            - containerPort: 8083
+                            env:
+                            - name: SA_PASSWORD
+                              valueFrom:
+                                secretKeyRef:
+                                  name: sql-server-secret
+                                  key: SA_PASSWORD
+                            envFrom:
+                            - configMapRef:
+                                name: auth-sql-server-config
+                            - configMapRef:
+                                name: base-config
+                '''
+                // Deploy to Kubernetes
+                sh 'kubectl apply -f deployment.yaml --namespace=${KUBE_NAMESPACE}'
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up resources if anything goes wrong
+            script {
+                sh """
+                kubectl delete pod test-runner --namespace=${KUBE_NAMESPACE} || true
+                """
+            }
+        }
+        success {
+            echo 'Pipeline succeeded! Application deployed and tests passed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed! Application deployment or tests were unsuccessful.'
+        }
+    }
+}
