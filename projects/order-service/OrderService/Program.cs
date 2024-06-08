@@ -10,6 +10,7 @@ using OrderService.Services;
 using OpenTelemetry.Trace;
 using Shared;
 using DbContext = OrderService.Repo.DbContext;
+using OrderService.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,7 @@ builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IOrderService, OrderService.Services.OrderService>();
 builder.Services.AddControllers();
+builder.Services.AddSingleton<PerformanceMonitorService>();
 
 // Configure authentication
 var secretKey = builder.Configuration.GetValue<string>("AppSettings:Token");
@@ -99,6 +101,7 @@ app.UseSwaggerUI(c =>
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<PerformanceMonitoringMiddleware>();
 
 app.MapControllers();
 

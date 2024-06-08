@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Trace;
 using Shared;
+using InventoryService.Middleware;
 using DbContext = InventoryService.Repo.DbContext;
-
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:8081");
@@ -49,6 +49,7 @@ builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IItemRepo, ItemRepo>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddControllers();
+builder.Services.AddSingleton<PerformanceMonitorService>();
 
 // Configure JWT authentication
 var secretKey = Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("AppSettings:Token"));
@@ -99,6 +100,7 @@ app.UseSwaggerUI(c =>
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<PerformanceMonitoringMiddleware>();
 
 app.MapControllers();
 
