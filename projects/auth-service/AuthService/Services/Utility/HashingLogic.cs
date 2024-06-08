@@ -1,8 +1,9 @@
 ﻿using System.Text;
+using AuthService.Services.Interfaces;
 
 namespace AuthService.Services.Utility;
 
-public class HashingLogic
+public class HashingLogic : IHashingLogic
 {
     public virtual void GenerateHash(string Password, out byte[] PasswordHash, out byte[] PasswordSalt)
     {
