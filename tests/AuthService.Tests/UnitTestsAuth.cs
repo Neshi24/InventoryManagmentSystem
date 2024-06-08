@@ -30,7 +30,7 @@ public class UnitTestsAuth
         }
 
         [Fact]
-        public void CreateUser_ShouldReturnUser_WhenUserIsCreated()
+        public void CreateUser()
         {
             // Arrange
             var userDto = new UserDto { Username = "testuser", Email = "test@example.com", password = "password123" };
@@ -55,7 +55,7 @@ public class UnitTestsAuth
         }
 
         [Fact]
-        public void GetUserById_ShouldReturnUser_WhenUserExists()
+        public void GetUserById()
         {
             // Arrange
             var user = new User { Id = 1, Username = "testuser", Email = "test@example.com" };
@@ -72,7 +72,7 @@ public class UnitTestsAuth
         
 
         [Fact]
-        public void UpdateUser_ShouldReturnUpdatedUser_WhenUserIsUpdated()
+        public void UpdateUser()
         {
             // Arrange
             var userDto = new UserDto { Username = "updateduser", Email = "updated@example.com", password = "newpassword123" };
@@ -101,7 +101,7 @@ public class UnitTestsAuth
         }
 
         [Fact]
-        public void DeleteUser_ShouldReturnUser_WhenUserIsDeleted()
+        public void DeleteUser()
         {
             // Arrange
             var user = new User { Id = 1, Username = "testuser", Email = "test@example.com" };
@@ -117,7 +117,7 @@ public class UnitTestsAuth
         }
 
         [Fact]
-        public void GetUserByEmail_ShouldReturnUser_WhenUserExists()
+        public void GetUserByEmail()
         {
             // Arrange
             var user = new User { Id = 1, Username = "testuser", Email = "test@example.com" };
@@ -131,8 +131,6 @@ public class UnitTestsAuth
             Assert.Equal(user.Email, result.Email);
             _userRepositoryMock.Verify(r => r.GetUserByEmail("test@example.com"), Times.Once);
         }
-
-        // Delegate for callback in Setup
         private delegate void GenerateHashCallback(string password, out byte[] passwordHash, out byte[] passwordSalt);
     }
 }
