@@ -7,7 +7,7 @@ using CommonPackage;
 using Moq;
 
 
-namespace AuthService.Tests;
+namespace TestAuth;
 
 public class UnitTestsAuth
 {

@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonPackage", "packages\C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4C5235C3-CE29-4435-AF6B-23D7832EEFA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.Tests", "tests\AuthService.Tests\AuthService.Tests.csproj", "{D0742951-D9E4-47F4-9C07-5A19E2FB7727}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAuth", "tests\TestAuth\TestAuth.csproj", "{D0742951-D9E4-47F4-9C07-5A19E2FB7727}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryService.Tests", "tests\InventoryService.Tests\InventoryService.Tests.csproj", "{4A0BE537-6EBB-4442-82E9-272E4F1B988B}"
 EndProject

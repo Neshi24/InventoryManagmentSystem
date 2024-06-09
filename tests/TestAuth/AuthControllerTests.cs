@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 using AuthService.Model;
-using AuthService.Tests.DBsetup;
+using TestAuth.DBsetup;
 using FluentAssertions;
 
 
