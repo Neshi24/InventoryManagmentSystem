@@ -12,10 +12,10 @@ pipeline {
         stage('Tear Down Current Deployment') {
             steps {
                 script {
-                    // Remove any existing deployment
+                    // Remove any existing deployment, ignoring not-found errors
                     sh """
-                    kubectl delete deployment ${KUBE_DEPLOYMENT} --namespace=${KUBE_NAMESPACE} || true
-                    """
+            kubectl delete deployment ${KUBE_DEPLOYMENT} --namespace=${KUBE_NAMESPACE} --ignore-not-found=true
+            """
                 }
             }
         }
