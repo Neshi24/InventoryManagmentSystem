@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 EXPOSE 8083
-
+# EXPOSE 8084
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["projects/auth-service/AuthService/AuthService.csproj", "projects/auth-service/AuthService/"]
