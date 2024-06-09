@@ -11,21 +11,11 @@ pipeline {
     }
 
     stages {
-        stage('Tear Down Current Deployment') {
-            steps {
-                script {
-                    // Remove any existing deployment, ignoring not-found errors
-                    sh """
-            kubectl delete deployment ${KUBE_DEPLOYMENT} --namespace=${KUBE_NAMESPACE} --ignore-not-found=true
-            """
-                }
-            }
-        }
 
         stage('Pull and Build Image (Docker)') {
             steps {
                 script {
-                     docker.image('authservice:latest')
+                     sh 'docker-compose build'
                  }
             }
         }
@@ -74,6 +64,17 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh 'docker login -u $USERNAME -p $PASSWORD'
                     sh 'docker push ${IMAGE_NAME}'
+                }
+            }
+        }
+
+        stage('Tear Down Current Deployment') {
+            steps {
+                script {
+                    // Remove any existing deployment, ignoring not-found errors
+                    sh """
+            kubectl delete deployment ${KUBE_DEPLOYMENT} --namespace=${KUBE_NAMESPACE} --ignore-not-found=true
+            """
                 }
             }
         }
