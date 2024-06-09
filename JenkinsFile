@@ -9,17 +9,17 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                bat 'docker compose build'
+                bat 'docker compose build authservice'
             }
         }
         stage('Deploy') {
             steps {
-                bat 'docker compose up -d'
+                bat 'docker compose up -d authservice'
             }
         }
           stage('Test') {
             steps {
-                bat 'docker compose up test'
+                bat 'docker compose up tests'
             }
         }
     }

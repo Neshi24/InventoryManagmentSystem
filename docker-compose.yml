@@ -71,11 +71,13 @@ services:
     depends_on:
       - apigateway
 
-    test:
-      build:
-        context: .
-        dockerfile: tests/authservice.tests/Dockerfile
-      command: dotnet test tests/authservice.tests/authservice.tests.csproj
+  test:
+    build:
+      context: .
+      dockerfile: tests/authservice.tests/Dockerfile
+    ports:
+      - "8080:8080"
+      
 volumes:
   rps_seq_data1:
 
