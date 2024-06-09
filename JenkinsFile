@@ -19,7 +19,7 @@ pipeline {
         }
           stage('Test') {
             steps {
-                bat 'docker compose up tests'
+                bat 'docker compose up test'
             }
         }
     }
