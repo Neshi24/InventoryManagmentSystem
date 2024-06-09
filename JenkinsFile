@@ -15,7 +15,7 @@ pipeline {
         stage('Pull and Build Image (Docker)') {
             steps {
                 script {
-                    sh 'docker-compose build'
+                    docker.version()
                  }
             }
         }
