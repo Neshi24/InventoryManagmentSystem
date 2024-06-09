@@ -15,10 +15,7 @@ pipeline {
         stage('Pull and Build Image (Docker)') {
             steps {
                 script {
-                    dockerCompose(
-                        composeFile: 'docker-compose.yml',
-                        upOptions: '--build -d'
-                    )
+                    sh 'docker build -t ${IMAGE_NAME} .'
                 }
             }
         }
