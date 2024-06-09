@@ -15,8 +15,11 @@ pipeline {
         stage('Pull and Build Image (Docker)') {
             steps {
                 script {
-                    docker.version()
-                 }
+                    dockerCompose(
+                        composeFile: 'docker-compose.yml',
+                        upOptions: '--build -d'
+                    )
+                }
             }
         }
 
