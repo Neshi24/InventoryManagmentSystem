@@ -4,6 +4,7 @@ pipeline {
         pollSCM('* * * * *')
     }
     environment {
+        DOCKERHOME = tool 'myDocker'
         DOCKERHUB_CREDENTIALS = 'DOCKERHUB'
         IMAGE_NAME = 'authservice:latest'
         KUBE_NAMESPACE = 'default'
