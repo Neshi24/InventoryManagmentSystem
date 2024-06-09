@@ -4,7 +4,7 @@ pipeline {
         pollSCM('* * * * *')
     }
     environment {
-        DOCKER_HOME = 'C:/Program Files/Docker/Docker' // Adjust the path to Docker executable as per your system
+        DOCKER_HOME = tool 'myDocker'
         DOCKERHUB_CREDENTIALS = 'DOCKERHUB'
         IMAGE_NAME = 'authservice:latest'
         KUBE_NAMESPACE = 'default'
