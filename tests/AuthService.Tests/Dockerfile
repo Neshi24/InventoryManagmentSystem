@@ -17,4 +17,4 @@ RUN dotnet publish "AuthService.Tests.csproj" -c Release -o /app/publish /p:UseA
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "AuthService.Tests.dll"]
+ENTRYPOINT ["dotnet", "test", "AuthService.Tests.dll"]
