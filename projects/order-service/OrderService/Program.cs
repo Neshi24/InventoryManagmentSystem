@@ -37,7 +37,7 @@ var config = new MapperConfiguration(conf =>
     conf.CreateMap<MessageIdsDto, MessageIds>();
 });
 
-var connectionStr = $"amqp://{rmqUser}:{rmqPass}@rabbitmq"; // Connection string for RabbitMQ
+var connectionStr = $"amqp://guest:guest@rabbitmq";
 var hostname = "rabbitmq"; // Hostname for RabbitMQ connection
 Console.WriteLine($"Connection string: {connectionStr}");
 

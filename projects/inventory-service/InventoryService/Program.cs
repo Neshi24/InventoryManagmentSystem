@@ -39,7 +39,7 @@ var config = new MapperConfiguration(conf =>
 {
     conf.CreateMap<ItemDto, Item>();
 });
-var connectionStr = $"amqp://{rmqUser}:{rmqPass}@rabbitmq";
+var connectionStr = $"amqp://guest:guest@rabbitmq";
 Console.WriteLine($"Connection string: {connectionStr}");
 var hostname = "rabbitmq";
 
