@@ -52,7 +52,13 @@ spec:
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
+            - name: docker-socket
+              mountPath: /var/run/docker.sock  # Mount Docker socket here
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
               claimName: jenkins-pv-claim
+        - name: docker-socket
+          hostPath:
+              path: /var/run/docker.sock
+              type: Socket
