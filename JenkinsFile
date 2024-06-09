@@ -1,26 +1,122 @@
 pipeline {
     agent any
+
+    // Trigger the pipeline to poll the SCM every 15 minutes
     triggers {
-        pollSCM('* * * * *')
+        pollSCM('H/15 * * * *')
     }
-    environment {
-        DOCKER_HOME = 'C:/Program Files/Docker/Docker' // Adjust the path to Docker executable as per your system
-    }
+
     stages {
+        // Stage to check if there are any changes in the codebase 
+        // could be expanded to check for only things we would like, so it may ignore changes to certain files and not build when it happens
+        stage('Check Changes') {
+            steps {
+                script {
+                    // Use Git to check for changes between the latest commit and the previous commit
+                    def changes = bat(script: 'git diff --name-only HEAD HEAD~1', returnStdout: true).trim()
+                    
+                    // If changes are detected, proceed with the build
+                    if (changes) {
+                        currentBuild.description = "Changes detected, proceeding with the build."
+                        env.CHANGES = 'true'
+                    } else {
+                        // If no changes are detected, skip the build stages
+                        currentBuild.description = "No changes detected, skipping build stages."
+                        env.CHANGES = 'false'
+                    }
+                }
+            }
+        }
         stage('Build') {
-            steps {
-                bat 'docker compose build authservice'
+            when {
+                // Execute this stage only if changes are detected
+                expression { env.CHANGES == 'true' }
+            }
+            // running the build in parallel to untilize all the available cores in the cpu to keep it green.
+            parallel {
+                stage('Build Auth Service') {
+                    steps {
+                        // Build the authservice Docker image
+                        bat 'docker compose build authservice'
+                    }
+                }
+                stage('Build Order Service') {
+                    steps {
+                        // Build the orderservice Docker image
+                        bat 'docker compose build orderservice'
+                    }
+                }
+                stage('Build Inventory Service') {
+                    steps {
+                        // Build the inventoryservice Docker image
+                        bat 'docker compose build inventoryservice'
+                    }
+                }
             }
         }
+        // Stage to deploy the application
         stage('Deploy') {
+            when {
+                // Execute this stage only if changes are detected
+                expression { env.CHANGES == 'true' }
+            }
             steps {
+                // Deploy the application in detached mode using Docker Compose
+                // only composing the service as that is what we need to check for changes to keep it green XDXD
                 bat 'docker compose up authservice -d'
+                bat 'docker compose up orderservice -d'
+                bat 'docker compose up inventoryservice -d'
             }
         }
-          stage('Test') {
+
+        // Stage to run tests on the application
+        stage('Test') {
+            when {
+                // Execute this stage only if changes are detected
+                expression { env.CHANGES == 'true' }
+            }
             steps {
+                // Run the tests defined in Docker Compose
                 bat 'docker compose up test'
             }
+        }
+
+        // Stage to push Docker images to Docker Hub
+        stage('Deliver') {
+            when {
+                // Execute this stage only if changes are detected
+                expression { env.CHANGES == 'true' }
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DockerHub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    // Log in to Docker Hub using provided credentials
+                    bat "docker login -u %USERNAME% -p %PASSWORD%"
+                    echo "Pushing Docker images to Docker Hub... %USERNAME%"
+                    // Push the Docker images using Docker Compose
+                    bat 'docker compose push'
+                }
+            }
+        }
+
+        // Stage to clean up Docker resources
+        stage('Cleanup') {
+            when {
+                // Execute this stage only if changes are detected
+                expression { env.CHANGES == 'true' }
+            }
+            steps {
+                // Take down the Docker containers using Docker Compose
+                bat 'docker compose down'
+            }
+        }
+    }
+    // Post actions to always run after the pipeline completes
+    post {
+        always {
+            echo 'Cleaning up resources...'
+            // Prune unused Docker objects to free up space
+            // removing unused files to keep it green XDXDXD
+            bat 'docker system prune -f'
         }
     }
 }
