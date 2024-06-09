@@ -17,5 +17,10 @@ pipeline {
                 bat 'docker compose up -d'
             }
         }
+          stage('Test') {
+            steps {
+                bat 'docker compose up test'
+            }
+        }
     }
 }
