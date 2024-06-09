@@ -15,7 +15,9 @@ pipeline {
         stage('Pull and Build Image (Docker)') {
             steps {
                 script {
-                     sh 'docker-compose build'
+                     docker.image('docker/compose:1.29.2').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+                        sh 'docker-compose build'
+                    }
                  }
             }
         }
