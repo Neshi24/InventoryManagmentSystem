@@ -37,14 +37,9 @@ var config = new MapperConfiguration(conf =>
     conf.CreateMap<MessageIdsDto, MessageIds>();
 });
 
-var connectionStr = $"amqp://guest:guest@rabbitmq";
-var hostname = "rabbitmq"; // Hostname for RabbitMQ connection
-Console.WriteLine($"Connection string: {connectionStr}");
+
 
 // Register the MessageClient with the DI container
-builder.Services.AddSingleton<MessageClient>(sp =>
-    new MessageClient(RabbitHutch.CreateBus(connectionStr), hostname, rmqExchange));
-builder.Services.AddHostedService<MessageHandler>();
 builder.Services.AddSingleton(config.CreateMapper());
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IOrderService, OrderService.Services.OrderService>();
