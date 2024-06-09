@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                bat 'docker compose up -d authservice'
+                bat 'docker compose up authservice -d'
             }
         }
           stage('Test') {
