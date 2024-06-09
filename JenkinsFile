@@ -24,8 +24,9 @@ pipeline {
 
         stage('Pull and Build Image (Docker)') {
             steps {
-                // Build Docker image
-                docker.image("authservice:latest")
+                script {
+                     docker.image('authservice:latest')
+                 }
             }
         }
 
