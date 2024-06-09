@@ -74,10 +74,10 @@ services:
   test:
     build:
       context: .
-      dockerfile: tests/authservice.tests/Dockerfile
+      dockerfile: tests/TestAuth/Dockerfile
     ports:
       - "8080:8080"
-      
+
 volumes:
   rps_seq_data1:
 
