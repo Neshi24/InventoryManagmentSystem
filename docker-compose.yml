@@ -72,6 +72,7 @@ services:
       - apigateway
 
   test:
+    image: testauth
     build:
       context: .
       dockerfile: tests/TestAuth/Dockerfile

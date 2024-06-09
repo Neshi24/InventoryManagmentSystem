@@ -10,6 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 bat 'docker compose build authservice'
+                bat 'docker compose build test'
             }
         }
         stage('Deploy') {
